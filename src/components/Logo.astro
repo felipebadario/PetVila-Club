@@ -1,57 +1,38 @@
 ---
 /**
- * Logo oficial. Enquanto src/assets/brand/logo-petvila(-claro).svg não existir,
- * mostra um placeholder marcado. Nunca redesenhar o logo aqui.
+ * Logo oficial (petvila + club.), inline para herdar a cor do tom.
+ * Vetorizado a partir do print enviado pelo Felipe; trocar src/assets/brand/logo-petvila.svg
+ * pelo vetor oficial quando chegar. Nunca redesenhar o logo aqui.
  */
+import raw from '../assets/brand/logo-petvila.svg?raw';
+
 interface Props {
-  tone?: 'dark' | 'light';
+  /** dark = Fucinho, light = Chamego, brand = Patinha */
+  tone?: 'dark' | 'light' | 'brand';
   class?: string;
   height?: string;
 }
 const { tone = 'dark', class: cls = '', height = '2.25rem' } = Astro.props;
-const files = import.meta.glob<{ default: { src: string } }>('../assets/brand/logo-petvila*.svg', { eager: true });
-const pick = tone === 'light' ? files['../assets/brand/logo-petvila-claro.svg'] : undefined;
-const official = pick ?? files['../assets/brand/logo-petvila.svg'];
+const svg = raw.replace(/\s(role|aria-label)="[^"]*"/g, '').replace('<svg ', '<svg role="img" aria-label="PetVila Club" focusable="false" ');
 ---
 
-{official ? (
-  <img src={official.default.src} alt="PetVila Club" class={`logo ${cls}`} style={`height:${height}`} />
-) : (
-  <span class={`logo logo--placeholder ${cls}`} data-tone={tone} style={`--h:${height}`} role="img" aria-label="PetVila Club">
-    <span aria-hidden="true">PetVila</span>
-    <small aria-hidden="true">logo oficial</small>
-  </span>
-)}
+<span class={`logo ${cls}`} data-tone={tone} style={`--h:${height}`} set:html={svg} />
 
 <style>
   .logo {
-    width: auto;
-  }
-  .logo--placeholder {
-    position: relative;
     display: inline-flex;
-    align-items: center;
     height: var(--h);
-    padding: 0 0.7em;
-    border: 1.5px dashed currentColor;
-    border-radius: 999px;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: calc(var(--h) * 0.5);
-    letter-spacing: -0.01em;
-    white-space: nowrap;
+    color: var(--fucinho);
+    line-height: 0;
   }
-  .logo--placeholder small {
-    position: absolute;
-    left: 50%;
-    top: 100%;
-    transform: translate(-50%, 0.25rem);
-    font-family: var(--font-body);
-    font-size: 0.55rem;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.6;
-    white-space: nowrap;
+  .logo[data-tone='light'] {
+    color: var(--chamego);
+  }
+  .logo[data-tone='brand'] {
+    color: var(--patinha);
+  }
+  .logo :global(svg) {
+    height: 100%;
+    width: auto;
   }
 </style>

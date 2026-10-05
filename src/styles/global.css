@@ -6,8 +6,7 @@
  *   Fucinho/Chamego 12.7  Terra/Chamego 9.6  Chamego/Terra 9.6
  *   Fucinho/Patinha 4.4 (só texto grande/negrito)  Patinha/Chamego 2.9 (só decorativo)
  */
-@import '@fontsource-variable/fraunces/soft.css';
-@import '@fontsource-variable/dm-sans/wght.css';
+@import '@fontsource-variable/bricolage-grotesque/standard.css';
 
 :root {
   --patinha: #e25d28;
@@ -20,9 +19,10 @@
   --ink-soft: color-mix(in srgb, var(--fucinho) 78%, var(--chamego));
   --line: color-mix(in srgb, var(--fucinho) 22%, transparent);
 
-  /* PENDENTE: fontes oficiais do brand book. Fraunces (SOFT) + DM Sans são provisórias. */
-  --font-display: 'Fraunces Variable', 'Fraunces', Georgia, serif;
-  --font-body: 'DM Sans Variable', 'DM Sans', system-ui, sans-serif;
+  /* Aproximação do alfabeto enviado (grotesca larga e pesada, Display + Text).
+     PENDENTE: trocar pelos arquivos oficiais da fonte quando chegarem. */
+  --font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, sans-serif;
 
   --step--1: clamp(0.875rem, 0.84rem + 0.15vw, 0.95rem);
   --step-0: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
@@ -103,10 +103,10 @@ h2,
 h3,
 .display {
   font-family: var(--font-display);
-  font-variation-settings: 'SOFT' 100;
-  font-weight: 600;
-  line-height: 0.98;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  font-optical-sizing: auto;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 

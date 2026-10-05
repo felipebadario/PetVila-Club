@@ -9,7 +9,8 @@ Data: 05/10/2026 · Status: v0.2 funcional. Fotos provisórias do Unsplash, cada
 - Paleta oficial (sem alteração de valores): Patinha `#E25D28`, Chamego `#FFE1BC`, Terra `#562A22`, Fucinho `#301F03`.
 - Personalidade: casual, divertida, artesanal, afetiva, familiar. Creator + Caregiver.
 - Logo: **não foi recriado nem redesenhado**. Há um espaço reservado marcado "logo oficial" no header, no footer e na página 404. Ao salvar `src/assets/brand/logo-petvila.svg` (e `logo-petvila-claro.svg` para fundos escuros), o componente `Logo` passa a usar o arquivo oficial automaticamente.
-- Tipografia: **provisória** (Fraunces com eixo SOFT para títulos, DM Sans para texto). Foi escolhida por ser arredondada e calorosa sem ser infantil, mas deve ser trocada pelas fontes do brand book. A troca é feita em `src/styles/global.css` (`--font-display`, `--font-body`).
+- Logo: vetorizado do print enviado pelo Felipe em 05/10/2026 (`src/assets/brand/logo-petvila.svg`, cor via `currentColor`). Substituir pelo vetor oficial quando chegar; favicon, apple-touch-icon e og-image são regenerados com `node scripts/brand-icons.mjs`.
+- Tipografia: **aproximação** do alfabeto enviado (grotesca larga e pesada com versões Display e Text) usando Bricolage Grotesque (OFL), pois o nome da fonte não veio no print. Trocar pelos arquivos oficiais em `src/styles/global.css` (`--font-display`, `--font-body`).
 - Elementos gráficos do Hero, Manifesto e Primeiros da Vila são formas neutras (círculos, blob, traço) **provisórias**, só para validar composição e movimento. Devem ser substituídos pelas ilustrações oficiais.
 
 Quando o brand book chegar, a revisão é: logo, fontes, ilustrações, padrões/texturas e qualquer regra de uso (área de respiro, combinações de cor proibidas, tamanho mínimo).
@@ -67,7 +68,7 @@ petvila-lp/
 ├─ vercel.json             # redirects .com/www → .com.br, headers de segurança e cache
 ├─ .env.example            # variáveis públicas e privadas, separadas
 ├─ public/                 # favicon, apple-touch-icon, og-image (provisórios)
-├─ scripts/                # og-image.mjs, build-preview.py
+├─ scripts/                # brand-icons.mjs, build-preview.py
 ├─ docs/primeira-entrega.md
 └─ src/
    ├─ assets/brand/        # coloque aqui o logo oficial (troca automática)
