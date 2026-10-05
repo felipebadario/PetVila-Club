@@ -14,7 +14,7 @@ Astro.response.headers.set('x-robots-tag', 'noindex, nofollow');
 Astro.response.headers.set('cache-control', 'no-store');
 
 const authed = await isAuthed(Astro.cookies);
-const loginError = Astro.url.searchParams.has('erro');
+const loginError = Astro.url.searchParams.get('erro');
 
 let leads: CrmLead[] = [];
 let loadError = '';
@@ -61,7 +61,11 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
             <>
               <label for="senha">Senha</label>
               <input id="senha" name="senha" type="password" autocomplete="current-password" required autofocus />
-              {loginError && <p class="login__err" role="alert">Senha incorreta.</p>}
+              {loginError && (
+                <p class="login__err" role="alert">
+                  {loginError === 'limite' ? 'Muitas tentativas. Aguarde 15 minutos e tente de novo.' : 'Senha incorreta.'}
+                </p>
+              )}
               <button type="submit">Entrar</button>
             </>
           )}

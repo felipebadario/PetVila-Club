@@ -29,9 +29,12 @@ export async function checkPassword(input: string) {
   return safeEqual(await hmac('pw:' + input), await hmac('pw:' + expected));
 }
 
+// A senha entra na assinatura: trocar CRM_PASSWORD derruba todas as sessões abertas.
+const sessionSig = (exp: string) => hmac(`s:${exp}:${env('CRM_PASSWORD')}`);
+
 export async function startSession(cookies: AstroCookies) {
   const exp = String(Date.now() + TTL_MS);
-  cookies.set(COOKIE, `${exp}.${await hmac('s:' + exp)}`, {
+  cookies.set(COOKIE, `${exp}.${await sessionSig(exp)}`, {
     httpOnly: true,
     secure: import.meta.env.PROD,
     sameSite: 'strict',
@@ -50,7 +53,7 @@ export async function isAuthed(cookies: AstroCookies) {
   if (!v) return false;
   const [exp, sig] = v.split('.');
   if (!exp || !sig || Number(exp) < Date.now()) return false;
-  return safeEqual(sig, await hmac('s:' + exp));
+  return safeEqual(sig, await sessionSig(exp));
 }
 
 /** POSTs do CRM só aceitam a mesma origem (além do SameSite=Strict do cookie). */

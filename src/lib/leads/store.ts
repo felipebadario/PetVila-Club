@@ -41,13 +41,27 @@ class SheetsStore implements LeadStore {
   }
 
   async list() {
+    // Token no corpo (POST), não na URL, para não ficar em logs de acesso.
+    const res = await fetch(this.url, {
+      method: 'POST',
+      headers: { 'content-type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'list', token: this.token }),
+      redirect: 'follow',
+      signal: AbortSignal.timeout(15000),
+    });
+    let out = await res.json().catch(() => ({ ok: false, error: `http_${res.status}` }));
+    // Compatibilidade com a versão anterior do Apps Script, que só lista por GET.
+    if (out.error === 'unknown_action') out = await this.listLegacy();
+    if (!out.ok) throw new Error(`planilha: ${out.error}`);
+    return out.leads as CrmLead[];
+  }
+
+  private async listLegacy() {
     const u = new URL(this.url);
     u.searchParams.set('action', 'list');
     u.searchParams.set('token', this.token);
     const res = await fetch(u, { redirect: 'follow', signal: AbortSignal.timeout(15000) });
-    const out = await res.json();
-    if (!out.ok) throw new Error(`planilha: ${out.error}`);
-    return out.leads as CrmLead[];
+    return res.json();
   }
 
   update(id: string, patch: { status?: LeadStatus; nota?: string }) {

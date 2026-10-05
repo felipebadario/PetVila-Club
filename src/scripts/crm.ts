@@ -86,17 +86,17 @@ export function initCrm() {
     rows.innerHTML = list
       .map((l) => {
         const status = l.status || 'novo';
-        const wa = l.whatsapp ? `https://wa.me/55${l.whatsapp}` : '';
+        const wa = /^\d{10,11}$/.test(l.whatsapp) ? `https://wa.me/55${l.whatsapp}` : '';
         return `<tr data-id="${esc(l.id)}">
           <td class="date">${esc(fmtDate(l.criado_em))}</td>
           <td><strong>${esc(l.nome)}</strong></td>
           <td>${esc(l.nome_cao)}<small>${esc(labels.porte[l.porte] || l.porte)} · ${esc(labels.idade[l.idade_faixa] || l.nascimento || '')}</small></td>
-          <td><a href="mailto:${esc(l.email)}">${esc(l.email)}</a>${wa ? `<small><a href="${wa}" target="_blank" rel="noopener">${esc(fmtPhone(l.whatsapp))}</a></small>` : ''}</td>
+          <td><a href="mailto:${esc(l.email)}">${esc(l.email)}</a>${wa ? `<small><a href="${wa}" target="_blank" rel="noopener noreferrer">${esc(fmtPhone(l.whatsapp))}</a></small>` : ''}</td>
           <td>${esc(l.cidade)}<small>${esc(l.uf)}</small></td>
           <td><div class="chips">${l.interesses.map((i) => `<span>${esc(labels.interesse[i] || i)}</span>`).join('')}</div></td>
           <td>${esc(l.utm_source || 'direto')}<small>${esc([l.utm_campaign, l.cta_origem].filter(Boolean).join(' · '))}</small></td>
           <td><select data-status="${esc(status)}" aria-label="Status de ${esc(l.nome)}">${statuses
-            .map((s) => `<option value="${s}"${s === status ? ' selected' : ''}>${s}</option>`)
+            .map((s) => `<option value="${esc(s)}"${s === status ? ' selected' : ''}>${esc(s)}</option>`)
             .join('')}</select></td>
           <td><textarea rows="1" aria-label="Nota sobre ${esc(l.nome)}" placeholder="Anotar…">${esc(l.nota)}</textarea></td>
         </tr>`;

@@ -11,6 +11,11 @@
  *    Executar como: Eu. Quem pode acessar: Qualquer pessoa.
  *    Copie a URL (termina em /exec) para LEADS_SHEETS_URL na Vercel.
  * Toda chamada exige o TOKEN; sem ele a API responde "unauthorized".
+ * Segurança: a planilha guarda dados pessoais (LGPD). Não compartilhe a planilha
+ * nem o projeto do Apps Script com ninguém que não precise; o TOKEN deve ter
+ * 32+ caracteres aleatórios e ser trocado (aqui e na Vercel) se vazar.
+ * Ao atualizar este arquivo: Implantar > Gerenciar implantações > editar > Nova versão
+ * (mantém a mesma URL).
  */
 
 var SHEET_NAME = 'Leads';
@@ -40,7 +45,11 @@ function json_(obj) {
 
 function authorized_(token) {
   var expected = PropertiesService.getScriptProperties().getProperty('TOKEN');
-  return !!expected && token === expected;
+  if (!expected || typeof token !== 'string' || token.length !== expected.length) return false;
+  // Comparação em tempo constante.
+  var diff = 0;
+  for (var i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ token.charCodeAt(i);
+  return diff === 0;
 }
 
 /** Texto que começa com = + - @ vira fórmula no Sheets; prefixa com apóstrofo. */
@@ -62,6 +71,7 @@ function rows_() {
   });
 }
 
+/** Legado: o site agora lista por POST (token fora da URL). Mantido para não quebrar o CRM antes da reimplantação. */
 function doGet(e) {
   if (!authorized_(e.parameter.token)) return json_({ ok: false, error: 'unauthorized' });
   if (e.parameter.action === 'list') return json_({ ok: true, leads: rows_() });
@@ -72,6 +82,7 @@ function doPost(e) {
   var body;
   try { body = JSON.parse(e.postData.contents); } catch (err) { return json_({ ok: false, error: 'bad_json' }); }
   if (!authorized_(body.token)) return json_({ ok: false, error: 'unauthorized' });
+  if (body.action === 'list') return json_({ ok: true, leads: rows_() });
 
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
