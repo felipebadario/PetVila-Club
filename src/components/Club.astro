@@ -1,0 +1,158 @@
+---
+import CtaButton from './CtaButton.astro';
+import { club, cta } from '../content/copy';
+---
+
+<section class="club" id="club" aria-labelledby="club-title">
+  <div class="wrap">
+    <p class="eyebrow" data-reveal>{club.eyebrow}</p>
+    <h2 id="club-title" class="club__title" data-reveal style="--reveal-i:1">{club.headline}</h2>
+
+    <div class="club__plans">
+      {club.plans.map((p, i) => (
+        <article class={`plan ${p.core ? 'plan--core' : ''}`} data-reveal style={`--reveal-i:${i + 1}`} data-plan={p.id} aria-labelledby={`plan-${p.id}`}>
+          <div class="plan__blob" aria-hidden="true"></div>
+          <span class="plan__soon">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+              <defs><path id={`c-${p.id}`} d="M50 50 m-36 0 a36 36 0 1 1 72 0 a36 36 0 1 1 -72 0" /></defs>
+              <text><textPath href={`#c-${p.id}`}>EM BREVE · EM BREVE · EM BREVE ·</textPath></text>
+            </svg>
+            <span class="visually-hidden">{club.soon}</span>
+          </span>
+          <h3 id={`plan-${p.id}`} class="plan__name">{p.name}</h3>
+          <p class="plan__copy">{p.copy}</p>
+          <CtaButton origin={`club_${p.id}`} label={cta.short} size="md" class="plan__cta" />
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .club {
+    padding-block: var(--section);
+  }
+  .club__title {
+    font-size: var(--step-4);
+    max-width: 13ch;
+    margin: 1rem 0 clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .club__plans {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .plan {
+    --mx: 50%;
+    --my: 50%;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1rem;
+    min-height: clamp(24rem, 60vw, 36rem);
+    padding: clamp(1.5rem, 4vw, 3rem);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--fucinho);
+    background: color-mix(in srgb, var(--terra) 8%, var(--chamego));
+  }
+  .plan--core {
+    background: var(--terra);
+    border-color: var(--terra);
+    color: var(--chamego);
+  }
+  .plan__blob {
+    position: absolute;
+    z-index: -1;
+    width: 70%;
+    aspect-ratio: 1;
+    left: var(--mx);
+    top: var(--my);
+    translate: -50% -60%;
+    border-radius: 58% 42% 52% 48% / 46% 56% 44% 54%;
+    background: var(--patinha);
+    opacity: 0.9;
+    transition:
+      left 900ms var(--ease-out),
+      top 900ms var(--ease-out),
+      scale 900ms var(--ease-out),
+      rotate 1.4s var(--ease-out);
+    scale: 0.8;
+  }
+  .plan:not(.plan--core) .plan__blob {
+    background: color-mix(in srgb, var(--patinha) 30%, var(--chamego));
+  }
+  .plan__soon {
+    position: absolute;
+    top: clamp(1rem, 3vw, 2rem);
+    right: clamp(1rem, 3vw, 2rem);
+    width: 7.5rem;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--fucinho);
+    color: var(--chamego);
+  }
+  .plan--core .plan__soon {
+    background: var(--chamego);
+    color: var(--fucinho);
+  }
+  .plan__soon svg {
+    width: 100%;
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    fill: currentColor;
+  }
+  .motion .plan__soon svg {
+    animation: spin 18s linear infinite;
+  }
+  @keyframes spin {
+    to { rotate: 360deg; }
+  }
+  .plan__name {
+    font-size: var(--step-3);
+  }
+  .plan__copy {
+    font-size: var(--step-1);
+    max-width: 24ch;
+  }
+  .plan__cta {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+  }
+  .plan--core :global(.plan__cta) {
+    background: var(--chamego);
+    color: var(--fucinho);
+  }
+  .plan--core :global(.plan__cta:hover) {
+    background: color-mix(in srgb, var(--chamego) 85%, var(--patinha));
+  }
+
+  .plan.is-hot .plan__blob,
+  .plan:focus-within .plan__blob {
+    scale: 1.15;
+    rotate: 25deg;
+  }
+
+  @media (min-width: 960px) {
+    .club__plans {
+      grid-template-columns: 1fr 1.3fr;
+      align-items: stretch;
+    }
+    .plan--core {
+      min-height: 40rem;
+    }
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .plan:hover .plan__blob {
+      scale: 1.15;
+      rotate: 25deg;
+    }
+    .plan:hover .plan__soon svg {
+      animation-duration: 6s;
+    }
+  }
+</style>

@@ -1,0 +1,76 @@
+---
+/** CTA principal. Abre o cadastro "Primeiros da Vila"; `origin` identifica de onde veio. */
+import { cta } from '../content/copy';
+interface Props {
+  origin: string;
+  label?: string;
+  size?: 'md' | 'lg';
+  class?: string;
+}
+const { origin, label = cta.primary, size = 'lg', class: cls = '' } = Astro.props;
+---
+
+<button type="button" class={`cta cta--${size} ${cls}`} data-open-lead={origin} data-magnetic aria-haspopup="dialog">
+  <span class="cta__label">{label}</span>
+  <span class="cta__dot" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h13M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+  </span>
+</button>
+
+<style>
+  .cta {
+    --mx: 0px;
+    --my: 0px;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding: 0.55rem 0.55rem 0.55rem 1.6rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--fucinho);
+    color: var(--chamego);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: left;
+    line-height: 1.2;
+    transform: translate3d(var(--mx), var(--my), 0);
+    transition:
+      transform 500ms var(--ease-out),
+      background-color 300ms ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .cta--lg {
+    font-size: clamp(0.9rem, 0.85rem + 0.25vw, 1.05rem);
+    padding: 0.65rem 0.65rem 0.65rem 1.8rem;
+    min-height: 3.75rem;
+  }
+  .cta__dot {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: var(--patinha);
+    color: var(--fucinho);
+    transition: transform 500ms var(--ease-spring);
+  }
+  .cta--lg .cta__dot {
+    width: 2.9rem;
+    height: 2.9rem;
+  }
+  .cta:hover {
+    background: var(--terra);
+  }
+  .cta:hover .cta__dot,
+  .cta:focus-visible .cta__dot {
+    transform: scale(1.12) rotate(-12deg);
+  }
+  .cta:active {
+    transform: translate3d(var(--mx), var(--my), 0) scale(0.97);
+  }
+</style>

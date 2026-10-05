@@ -1,0 +1,54 @@
+---
+/**
+ * Espaço reservado para um asset que ainda não existe (foto ou ilustração).
+ * A etiqueta diz exatamente o que produzir. Procure por <Placeholder para
+ * listar todos os pendentes.
+ */
+interface Props {
+  kind: 'foto' | 'ilustração';
+  label: string;
+  tone?: 'patinha' | 'terra' | 'chamego' | 'fucinho';
+  shape?: 'blob' | 'arch' | 'circle' | 'pill';
+  class?: string;
+  style?: string;
+}
+const { kind, label, tone = 'terra', shape = 'blob', class: cls = '', style = '' } = Astro.props;
+---
+
+<div class={`ph ph--${shape} ${cls}`} data-tone={tone} style={style} aria-hidden="true">
+  <span class="ph__tag">{kind}: {label}</span>
+</div>
+
+<style>
+  .ph {
+    --c: var(--terra);
+    --t: var(--chamego);
+    position: relative;
+    display: grid;
+    place-items: end start;
+    overflow: hidden;
+    background:
+      repeating-linear-gradient(-35deg, transparent 0 14px, color-mix(in srgb, var(--t) 9%, transparent) 14px 15px),
+      var(--c);
+    color: var(--t);
+  }
+  .ph[data-tone='patinha'] { --c: var(--patinha); --t: var(--fucinho); }
+  .ph[data-tone='chamego'] { --c: color-mix(in srgb, var(--terra) 12%, var(--chamego)); --t: var(--terra); }
+  .ph[data-tone='fucinho'] { --c: var(--fucinho); --t: var(--chamego); }
+  .ph--blob { border-radius: 58% 42% 52% 48% / 46% 56% 44% 54%; }
+  .ph--arch { border-radius: 999px 999px 1.5rem 1.5rem; }
+  .ph--circle { border-radius: 50%; }
+  .ph--pill { border-radius: 999px; }
+  .ph__tag {
+    margin: 12% 14%;
+    padding: 0.3em 0.7em;
+    border: 1px dashed currentColor;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    max-width: 80%;
+  }
+</style>

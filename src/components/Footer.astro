@@ -1,0 +1,71 @@
+---
+import Logo from './Logo.astro';
+import { site } from '../config/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr section-dark">
+  <div class="wrap ftr__in">
+    <div class="ftr__brand">
+      <Logo tone="light" height="2.4rem" />
+      <p class="ftr__tag">{site.tagline}</p>
+    </div>
+    <nav class="ftr__links" aria-label="Rodapé">
+      {site.instagram && <a href={`https://instagram.com/${site.instagram}`} rel="noopener" target="_blank">Instagram</a>}
+      {site.contactEmail && <a href={`mailto:${site.contactEmail}`}>Contato</a>}
+      <a href="/privacidade">Política de Privacidade</a>
+      <a href="/termos">Termos de Uso</a>
+    </nav>
+    <p class="ftr__copy">© {year} {site.name}{site.legalName && ` · ${site.legalName}`}. Todos os direitos reservados.</p>
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    background: var(--fucinho);
+    color: var(--chamego);
+    padding-block: clamp(3.5rem, 8vw, 6rem) 2rem;
+  }
+  .ftr__in {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .ftr__tag {
+    margin-top: 1.5rem;
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-size: var(--step-2);
+    line-height: 1.1;
+    max-width: 16ch;
+  }
+  .ftr__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+  }
+  .ftr__links a {
+    text-decoration: none;
+    padding-block: 0.6rem;
+    background: linear-gradient(var(--patinha), var(--patinha)) 0 85% / 0 2px no-repeat;
+    transition: background-size 400ms var(--ease-out);
+  }
+  .ftr__links a:hover,
+  .ftr__links a:focus-visible {
+    background-size: 100% 2px;
+  }
+  .ftr__copy {
+    font-size: var(--step--1);
+    opacity: 0.75;
+    padding-top: 1.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--chamego) 25%, transparent);
+  }
+  @media (min-width: 960px) {
+    .ftr__in {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+    .ftr__copy {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,0 +1,585 @@
+---
+/**
+ * Cadastro "Primeiros da Vila" em 5 etapas, num <dialog> nativo
+ * (foco preso, Esc fecha, acessível sem biblioteca).
+ */
+import { form, ufs } from '../content/copy';
+import { site } from '../config/site';
+const s = form.steps;
+const total = 5;
+---
+
+<dialog class="lead" data-lead aria-labelledby="lead-heading">
+  <div class="lead__sheet">
+    <div class="lead__top">
+      <p class="lead__progress" data-progress-label>Passo 1 de {total}</p>
+      <ol class="lead__dots" aria-hidden="true">
+        {Array.from({ length: total }, (_, i) => <li data-dot={i}></li>)}
+      </ol>
+      <button type="button" class="lead__close" data-close aria-label="Fechar cadastro">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" /></svg>
+      </button>
+    </div>
+
+    <form class="lead__form" novalidate data-lead-form>
+      <h2 id="lead-heading" class="visually-hidden">Seja um dos Primeiros da Vila</h2>
+
+      <fieldset class="lead__step" data-step="0" data-fields="nome">
+        <legend class="lead__q">{s.tutor.title}</legend>
+        <label class="lead__field">
+          <span>{s.tutor.label}</span>
+          <input name="nome" autocomplete="given-name" maxlength="80" required />
+        </label>
+        <p class="lead__err" data-err="nome" aria-live="polite"></p>
+      </fieldset>
+
+      <fieldset class="lead__step" data-step="1" data-fields="nome_cao" hidden>
+        <legend class="lead__q">{s.dog.title}</legend>
+        <label class="lead__field">
+          <span>{s.dog.label}</span>
+          <input name="nome_cao" autocomplete="off" maxlength="60" required />
+        </label>
+        <p class="lead__err" data-err="nome_cao" aria-live="polite"></p>
+      </fieldset>
+
+      <fieldset class="lead__step" data-step="2" data-fields="porte,idade_faixa,nascimento" hidden>
+        <legend class="lead__q" data-dog-template={s.about.title}>{s.about.title.replace('{dog}', 'ele')}</legend>
+        <div class="lead__group" role="radiogroup" aria-labelledby="lbl-porte">
+          <span class="lead__glabel" id="lbl-porte">{s.about.sizeLabel}</span>
+          <div class="lead__chips">
+            {form.sizes.map((o) => (
+              <label class="chip chip--size" data-size={o.value}>
+                <input type="radio" name="porte" value={o.value} required />
+                <span class="chip__dot" aria-hidden="true"></span>
+                <span>{o.label}</span>
+              </label>
+            ))}
+          </div>
+          <p class="lead__err" data-err="porte" aria-live="polite"></p>
+        </div>
+        <div class="lead__group" role="radiogroup" aria-labelledby="lbl-idade">
+          <span class="lead__glabel" id="lbl-idade">{s.about.ageLabel}</span>
+          <div class="lead__chips">
+            {form.ages.map((o) => (
+              <label class="chip">
+                <input type="radio" name="idade_faixa" value={o.value} />
+                <span>{o.label}</span>
+              </label>
+            ))}
+          </div>
+          <details class="lead__more">
+            <summary>Prefiro informar a data de nascimento</summary>
+            <label class="lead__field">
+              <span>Data de nascimento</span>
+              <input type="date" name="nascimento" />
+            </label>
+            <p class="lead__err" data-err="nascimento" aria-live="polite"></p>
+          </details>
+          <p class="lead__err" data-err="idade_faixa" aria-live="polite"></p>
+        </div>
+      </fieldset>
+
+      <fieldset class="lead__step" data-step="3" data-fields="email,whatsapp,cidade,uf" hidden>
+        <legend class="lead__q">{s.contact.title}</legend>
+        <label class="lead__field">
+          <span>E-mail</span>
+          <input type="email" name="email" autocomplete="email" inputmode="email" maxlength="160" required />
+        </label>
+        <p class="lead__err" data-err="email" aria-live="polite"></p>
+        <label class="lead__field">
+          <span>WhatsApp com DDD</span>
+          <input type="tel" name="whatsapp" autocomplete="tel-national" inputmode="tel" placeholder="(11) 91234-5678" maxlength="16" required />
+        </label>
+        <p class="lead__err" data-err="whatsapp" aria-live="polite"></p>
+        <div class="lead__row">
+          <label class="lead__field lead__field--grow">
+            <span>Cidade</span>
+            <input name="cidade" autocomplete="address-level2" maxlength="80" required />
+          </label>
+          <label class="lead__field lead__field--uf">
+            <span>UF</span>
+            <select name="uf" autocomplete="address-level1" required>
+              <option value="">--</option>
+              {ufs.map((u) => <option value={u}>{u}</option>)}
+            </select>
+          </label>
+        </div>
+        <p class="lead__err" data-err="cidade" aria-live="polite"></p>
+        <p class="lead__err" data-err="uf" aria-live="polite"></p>
+      </fieldset>
+
+      <fieldset class="lead__step" data-step="4" data-fields="consentimento" hidden>
+        <legend class="lead__q" data-dog-template={s.interests.title}>{s.interests.title.replace('{dog}', 'seu cão')}</legend>
+        <p class="lead__hint">{s.interests.hint}</p>
+        <div class="lead__chips">
+          {form.interests.map((o) => (
+            <label class="chip">
+              <input type="checkbox" name="interesses" value={o.value} />
+              <span>{o.label}</span>
+            </label>
+          ))}
+        </div>
+        <label class="lead__consent">
+          <input type="checkbox" name="consentimento" required />
+          <span>
+            Quero receber novidades da PetVila Club por e-mail e WhatsApp. Li e concordo com a{' '}
+            <a href="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a>.
+          </span>
+        </label>
+        <p class="lead__err" data-err="consentimento" aria-live="polite"></p>
+      </fieldset>
+
+      <!-- Honeypot anti-spam: invisível para pessoas. -->
+      <div class="lead__hp" aria-hidden="true">
+        <label>Site <input name="website" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
+      <p class="lead__err lead__err--form" data-err="form" role="alert"></p>
+
+      <div class="lead__nav">
+        <button type="button" class="lead__back" data-back hidden>Voltar</button>
+        <button type="submit" class="lead__next" data-next>
+          <span data-next-label>Continuar</span>
+          <span class="lead__spinner" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+
+    <div class="lead__success" data-success hidden tabindex="-1">
+      <div class="lead__burst" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+      <h2 class="lead__s-title">{form.success.title}</h2>
+      <p class="lead__s-body" data-success-body data-template={form.success.body}></p>
+      <p class="lead__s-comp">{form.success.complement}</p>
+      <div class="lead__s-actions">
+        {site.instagram && (
+          <a class="lead__ig" href={`https://instagram.com/${site.instagram}`} target="_blank" rel="noopener" data-track="instagram_click">
+            {form.success.instagram}
+          </a>
+        )}
+        <button type="button" class="lead__back" data-close>Voltar para a página</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .lead {
+    --pad: clamp(1.25rem, 4vw, 2.5rem);
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fucinho);
+    overflow: visible;
+  }
+  .lead::backdrop {
+    background: color-mix(in srgb, var(--fucinho) 55%, transparent);
+    opacity: 0;
+    transition: opacity 350ms ease;
+  }
+  .lead[open].is-open::backdrop {
+    opacity: 1;
+  }
+  .lead__sheet {
+    position: absolute;
+    inset: auto 0 0 0;
+    max-height: 100%;
+    min-height: min(36rem, 92svh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    padding: var(--pad);
+    padding-bottom: max(var(--pad), env(safe-area-inset-bottom));
+    background: var(--chamego);
+    border-radius: 1.75rem 1.75rem 0 0;
+    transform: translateY(100%);
+    transition: transform 550ms var(--ease-out);
+  }
+  .lead.is-open .lead__sheet {
+    transform: none;
+  }
+  @media (min-width: 760px) {
+    .lead__sheet {
+      inset: 50% auto auto 50%;
+      width: min(40rem, calc(100% - 3rem));
+      min-height: 34rem;
+      max-height: calc(100% - 3rem);
+      border-radius: 2rem;
+      transform: translate(-50%, -46%) scale(0.96);
+      opacity: 0;
+      transition:
+        transform 550ms var(--ease-out),
+        opacity 300ms ease;
+    }
+    .lead.is-open .lead__sheet {
+      transform: translate(-50%, -50%);
+      opacity: 1;
+    }
+  }
+
+  .lead__top {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .lead__progress {
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .lead__dots {
+    display: flex;
+    gap: 0.35rem;
+    margin: 0 auto 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .lead__dots li {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fucinho) 20%, transparent);
+    transition:
+      width 400ms var(--ease-out),
+      background-color 300ms ease;
+  }
+  .lead__dots li.is-done {
+    background: var(--terra);
+  }
+  .lead__dots li.is-current {
+    width: 1.6rem;
+    background: var(--patinha);
+  }
+  .lead__close {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--fucinho) 8%, transparent);
+    transition: transform 400ms var(--ease-spring);
+  }
+  .lead__close:hover {
+    transform: rotate(90deg);
+  }
+
+  .lead__form {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .lead__step {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    display: grid;
+    gap: 0.9rem;
+    align-content: start;
+  }
+  .lead__step.is-entering {
+    animation: stepIn 500ms var(--ease-out);
+  }
+  .lead__step.is-entering-back {
+    animation: stepInBack 500ms var(--ease-out);
+  }
+  @keyframes stepIn {
+    from { opacity: 0; transform: translateX(2rem); }
+  }
+  @keyframes stepInBack {
+    from { opacity: 0; transform: translateX(-2rem); }
+  }
+  .lead__q {
+    padding: 0;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 600;
+    font-size: var(--step-3);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .lead__hint {
+    margin-top: -0.5rem;
+    color: var(--ink-soft);
+  }
+  .lead__field {
+    display: grid;
+    gap: 0.35rem;
+    font-weight: 600;
+    font-size: var(--step--1);
+  }
+  .lead__field input,
+  .lead__field select {
+    width: 100%;
+    min-height: 3.4rem;
+    padding: 0.75rem 1rem;
+    font-size: 1.125rem; /* >= 16px evita zoom no iOS */
+    font-weight: 500;
+    border: 1.5px solid var(--fucinho);
+    border-radius: 1rem;
+    background: color-mix(in srgb, white 45%, var(--chamego));
+    transition:
+      border-color 200ms ease,
+      box-shadow 200ms ease;
+  }
+  .lead__field input:focus,
+  .lead__field select:focus {
+    outline: none;
+    border-color: var(--terra);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--patinha) 45%, transparent);
+  }
+  .lead__field input[aria-invalid='true'],
+  .lead__field select[aria-invalid='true'] {
+    border-color: #a3220b;
+  }
+  .lead__row {
+    display: grid;
+    grid-template-columns: 1fr 6.5rem;
+    gap: 0.75rem;
+  }
+  .lead__group {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .lead__group + .lead__group {
+    margin-top: 0.75rem;
+  }
+  .lead__glabel {
+    font-weight: 700;
+    font-size: var(--step--1);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .lead__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .chip {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.9rem;
+    padding: 0.5rem 1.05rem;
+    border: 1.5px solid var(--fucinho);
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease,
+      transform 300ms var(--ease-spring);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .chip input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .chip:has(input:checked) {
+    background: var(--fucinho);
+    color: var(--chamego);
+  }
+  .chip:has(input:focus-visible) {
+    outline: 3px solid var(--patinha);
+    outline-offset: 3px;
+  }
+  .chip:active {
+    transform: scale(0.95);
+  }
+  .chip__dot {
+    width: var(--s, 0.8rem);
+    height: var(--s, 0.8rem);
+    border-radius: 50%;
+    background: var(--patinha);
+  }
+  .chip--size[data-size='pequeno'] { --s: 0.55rem; }
+  .chip--size[data-size='medio'] { --s: 0.8rem; }
+  .chip--size[data-size='grande'] { --s: 1.1rem; }
+  .lead__more summary {
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding-block: 0.5rem;
+    width: fit-content;
+  }
+  .lead__more[open] summary {
+    margin-bottom: 0.5rem;
+  }
+  .lead__consent {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    font-size: var(--step--1);
+    line-height: 1.45;
+    cursor: pointer;
+  }
+  .lead__consent input {
+    width: 1.35rem;
+    height: 1.35rem;
+    margin-top: 0.1rem;
+    accent-color: var(--terra);
+  }
+  .lead__err {
+    color: #8c1d07;
+    font-size: var(--step--1);
+    font-weight: 600;
+    min-height: 0;
+  }
+  .lead__err:empty {
+    display: none;
+  }
+  .lead__hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+  .lead__nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: auto;
+    padding-top: 2rem;
+  }
+  .lead__next {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-height: 3.4rem;
+    padding: 0 1.75rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--fucinho);
+    color: var(--chamego);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+  }
+  .lead__next:hover {
+    background: var(--terra);
+  }
+  .lead__next[disabled] {
+    opacity: 0.7;
+    cursor: progress;
+  }
+  .lead__spinner {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 700ms linear infinite;
+  }
+  .lead__next[disabled] .lead__spinner {
+    display: inline-block;
+  }
+  @keyframes spin {
+    to { rotate: 360deg; }
+  }
+  .lead__back {
+    min-height: 3rem;
+    padding: 0 0.5rem;
+    border: 0;
+    background: none;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .lead__success {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    text-align: left;
+    outline: none;
+  }
+  .lead__success[hidden] {
+    display: none;
+  }
+  .lead__s-title {
+    font-size: var(--step-4);
+  }
+  .lead__s-body {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-size: var(--step-2);
+    line-height: 1.12;
+  }
+  .lead__s-body strong {
+    color: var(--terra);
+    background: linear-gradient(var(--patinha), var(--patinha)) 0 92% / 100% 0.12em no-repeat;
+  }
+  .lead__s-comp {
+    color: var(--ink-soft);
+    max-width: 36ch;
+  }
+  .lead__s-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .lead__ig {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3.2rem;
+    padding: 0 1.5rem;
+    border-radius: 999px;
+    background: var(--patinha);
+    color: var(--fucinho);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .lead__burst {
+    position: relative;
+    height: 5rem;
+  }
+  .lead__burst span {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 1.1rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--patinha);
+  }
+  .lead__burst span:nth-child(2) { left: 2.2rem; width: 2.6rem; background: var(--terra); top: 20%; }
+  .lead__burst span:nth-child(3) { left: 5.6rem; width: 1.4rem; background: var(--fucinho); }
+  .lead__burst span:nth-child(4) { left: 7.6rem; width: 3.2rem; top: 10%; border-radius: 58% 42% 52% 48% / 46% 56% 44% 54%; }
+  .lead__burst span:nth-child(5) { left: 11.6rem; width: 0.8rem; background: var(--terra); top: 60%; }
+  :global(.motion) .lead__success:not([hidden]) .lead__burst span {
+    animation: pop 800ms calc(var(--n, 0) * 70ms) var(--ease-spring) both;
+  }
+  .lead__burst span:nth-child(2) { --n: 1; }
+  .lead__burst span:nth-child(3) { --n: 2; }
+  .lead__burst span:nth-child(4) { --n: 3; }
+  .lead__burst span:nth-child(5) { --n: 4; }
+  @keyframes pop {
+    from { transform: scale(0) translateY(1.5rem); }
+  }
+</style>

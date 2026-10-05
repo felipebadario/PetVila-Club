@@ -1,0 +1,284 @@
+---
+import Placeholder from './Placeholder.astro';
+import { rotina } from '../content/copy';
+// Cada momento ganha uma combinação de cor da paleta e uma forma.
+const looks = [
+  { tone: 'patinha', shape: 'blob', rot: -4 },
+  { tone: 'terra', shape: 'arch', rot: 3 },
+  { tone: 'fucinho', shape: 'blob', rot: 6 },
+  { tone: 'patinha', shape: 'circle', rot: -2 },
+  { tone: 'terra', shape: 'blob', rot: 2 },
+] as const;
+---
+
+<section class="rot" id="rotina" aria-labelledby="rot-title" data-rotina style={`--n:${rotina.moments.length}`}>
+  <header class="rot__head wrap">
+    <p class="eyebrow" data-reveal>{rotina.eyebrow}</p>
+    <h2 id="rot-title" class="rot__title" data-reveal style="--reveal-i:1">{rotina.headline}</h2>
+    <p class="rot__intro" data-reveal style="--reveal-i:2">{rotina.intro}</p>
+  </header>
+  <div class="rot__track">
+    <div class="rot__sticky wrap">
+
+      <div class="rot__body">
+        <ul class="rot__words" role="list">
+          {rotina.moments.map((m, i) => (
+            <li>
+              <button
+                type="button"
+                class="rot__word"
+                data-moment={i}
+                aria-pressed={i === 0 ? 'true' : 'false'}
+                aria-controls={`rot-panel-${m.id}`}
+              >
+                <span class="rot__num" aria-hidden="true">0{i + 1}</span>
+                <span class="rot__label">{m.label}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div class="rot__stage" aria-live="polite">
+          {rotina.moments.map((m, i) => (
+            <figure
+              class="rot__panel"
+              id={`rot-panel-${m.id}`}
+              data-panel={i}
+              data-active={i === 0 ? 'true' : undefined}
+              style={`--rot:${looks[i].rot}deg`}
+            >
+              <div class="rot__visual">
+                <Placeholder kind="foto" label={`momento ${m.label.toLowerCase()}`} tone={looks[i].tone} shape={looks[i].shape} class="rot__photo" />
+                <Placeholder kind="ilustração" label={m.label.toLowerCase()} tone="chamego" shape="circle" class="rot__badge" />
+              </div>
+              <figcaption class="rot__copy">
+                <span class="rot__copy-label">{m.label}</span>
+                {m.copy}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+
+      <div class="rot__progress" aria-hidden="true"><span></span></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .rot {
+    padding-top: var(--section);
+  }
+  .rot__head {
+    margin-bottom: clamp(2rem, 5vw, 4rem);
+  }
+  .rot__title {
+    font-size: var(--step-3);
+    max-width: 14ch;
+    margin-top: 1rem;
+  }
+  .rot__body {
+    display: grid;
+    gap: 2rem;
+  }
+  .rot__words {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .rot__word {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    width: 100%;
+    padding: 0.15em 0;
+    border: 0;
+    background: none;
+    text-align: left;
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 600;
+    font-size: var(--step-4);
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: color-mix(in srgb, var(--fucinho) 24%, transparent);
+    transition:
+      color 400ms ease,
+      transform 600ms var(--ease-out);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .rot__num {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    transform: translateY(-1.6em);
+  }
+  .rot__word[aria-pressed='true'] {
+    color: var(--fucinho);
+    transform: translateX(0.35em);
+  }
+  .rot__word[aria-pressed='true'] .rot__label {
+    background: linear-gradient(var(--patinha), var(--patinha)) 0 88% / 100% 0.14em no-repeat;
+  }
+  .rot__label {
+    background: linear-gradient(var(--patinha), var(--patinha)) 0 88% / 0 0.14em no-repeat;
+    transition: background-size 600ms var(--ease-out);
+  }
+
+  .rot__stage {
+    position: relative;
+    display: grid;
+  }
+  .rot__panel {
+    grid-area: 1 / 1;
+    margin: 0;
+    display: grid;
+    gap: 1.25rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.94) rotate(calc(var(--rot) * -1));
+    transition:
+      opacity 500ms ease,
+      transform 900ms var(--ease-out),
+      visibility 0s 500ms;
+  }
+  .rot__panel[data-active] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 500ms ease,
+      transform 900ms var(--ease-out),
+      visibility 0s;
+  }
+  .rot__visual {
+    position: relative;
+    aspect-ratio: 4 / 3.4;
+    max-height: 60svh;
+  }
+  .rot :global(.rot__photo) {
+    position: absolute;
+    inset: 0;
+    rotate: var(--rot);
+  }
+  .rot :global(.rot__badge) {
+    position: absolute;
+    width: 30%;
+    aspect-ratio: 1;
+    right: -2%;
+    bottom: -6%;
+    transform: rotate(calc(var(--rot) * -3));
+    transition: transform 1.2s var(--ease-spring);
+  }
+  .rot__panel:not([data-active]) :global(.rot__badge) {
+    transform: scale(0.4) rotate(-40deg);
+  }
+  .rot__copy {
+    font-size: var(--step-1);
+    max-width: 28ch;
+  }
+  .rot__copy-label {
+    display: block;
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--terra);
+    margin-bottom: 0.3rem;
+  }
+  .rot__intro {
+    margin-top: 1.25rem;
+    max-width: 38ch;
+    font-size: var(--step-1);
+    color: var(--ink-soft);
+  }
+  .rot__progress {
+    display: none;
+  }
+
+  /* Desktop com mouse: palavras à esquerda, palco à direita; hover/foco troca o momento. */
+  @media (min-width: 960px) {
+    .rot__body {
+      grid-template-columns: 1.1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+    }
+  }
+
+  /* Touch: a seção vira um trilho alto; o scroll passa pelos momentos e o palco fica preso na tela. */
+  @media (hover: none), (pointer: coarse), (max-width: 959px) {
+    :global(.js) .rot__track {
+      height: calc(var(--n) * 70svh + 100svh);
+    }
+    :global(.js) .rot__sticky {
+      position: sticky;
+      top: 0;
+      height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-block: 4rem 1.5rem;
+    }
+    :global(.js) .rot__body {
+      gap: 1.25rem;
+      grid-template-columns: 1fr;
+    }
+    :global(.js) .rot__words {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      order: 2;
+    }
+    :global(.js) .rot__word {
+      width: auto;
+      font-family: var(--font-body);
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.55rem 0.9rem;
+      min-height: 2.75rem;
+      border-radius: 999px;
+      border: 1.5px solid var(--line);
+      color: var(--ink-soft);
+      transform: none;
+      align-items: center;
+    }
+    :global(.js) .rot__word[aria-pressed='true'] {
+      background: var(--fucinho);
+      border-color: var(--fucinho);
+      color: var(--chamego);
+    }
+    :global(.js) .rot__word .rot__label,
+    :global(.js) .rot__word[aria-pressed='true'] .rot__label {
+      background: none;
+    }
+    :global(.js) .rot__num {
+      display: none;
+    }
+    :global(.js) .rot__visual {
+      max-height: 50svh;
+      aspect-ratio: auto;
+      height: 50svh;
+    }
+    :global(.js) .rot__copy {
+      font-size: 1.05rem;
+    }
+    :global(.js) .rot__progress {
+      display: block;
+      height: 3px;
+      margin-top: 1.25rem;
+      background: var(--line);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    :global(.js) .rot__progress span {
+      display: block;
+      height: 100%;
+      background: var(--patinha);
+      transform-origin: left;
+      transform: scaleX(var(--p, 0));
+    }
+  }
+</style>

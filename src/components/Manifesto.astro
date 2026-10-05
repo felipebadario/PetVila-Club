@@ -1,0 +1,113 @@
+---
+import Placeholder from './Placeholder.astro';
+import { manifesto } from '../content/copy';
+const full = manifesto.lines.join(' ');
+const lines = manifesto.lines.map((l) => l.split(' '));
+let k = 0;
+const closing = manifesto.closing.split(/(Vila)/);
+---
+
+<section class="man section-dark" aria-label="Manifesto" data-manifesto>
+  <div class="man__track">
+    <div class="man__sticky wrap">
+      <p class="man__text" aria-label={full}>
+        {lines.map((words) => (
+          <span class="man__line" aria-hidden="true">
+            {words.map((w) => <span class="man__w" style={`--k:${k++}`}>{w} </span>)}
+          </span>
+        ))}
+      </p>
+      <p class="man__closing" data-closing>
+        {closing.map((part) => (part === 'Vila' ? <em>Vila</em> : part))}
+      </p>
+    </div>
+  </div>
+  <!-- A Vila: ilustração horizontal da marca nascendo na base da seção. -->
+  <div class="man__village" aria-hidden="true">
+    <Placeholder kind="ilustração" label="a Vila (panorama)" tone="patinha" shape="pill" class="man__village-ph" />
+  </div>
+</section>
+
+<style>
+  .man {
+    position: relative;
+    background: var(--terra);
+    color: var(--chamego);
+    overflow: clip;
+  }
+  .man__track {
+    height: 220svh;
+  }
+  .man__sticky {
+    position: sticky;
+    top: 0;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(2rem, 6vw, 4rem);
+    padding-block: 5rem;
+  }
+  .man__text {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 600;
+    font-size: var(--step-4);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+  }
+  .man__line {
+    display: block;
+  }
+  .man__line + .man__line {
+    margin-top: 0.3em;
+  }
+  .man__w {
+    --on: 1;
+    opacity: calc(0.16 + 0.84 * var(--on));
+    transition: opacity 250ms linear;
+  }
+  :global(.js.motion) .man__w {
+    --on: 0;
+  }
+  :global(.js.motion) .man__w.is-on {
+    --on: 1;
+  }
+  .man__closing {
+    font-size: var(--step-3);
+    transition:
+      opacity 800ms ease,
+      transform 1s var(--ease-out);
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    line-height: 1.15;
+    max-width: 18ch;
+    margin-left: auto;
+  }
+  :global(.js.motion) .man__closing:not(.is-on) {
+    opacity: 0;
+    transform: translateY(2rem);
+  }
+  .man__closing em {
+    font-style: normal;
+    color: var(--patinha);
+  }
+  .man__village {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 0;
+    height: 9rem;
+    translate: 0 calc((1 - var(--v, 1)) * 100%);
+  }
+  :global(.man__village-ph) {
+    width: 100%;
+    height: 100%;
+    border-radius: 999px 999px 0 0 !important;
+  }
+  @media (max-width: 759px) {
+    .man__text { font-size: clamp(2.3rem, 10.5vw, 3.4rem); }
+    .man__village { height: 5rem; }
+  }
+</style>

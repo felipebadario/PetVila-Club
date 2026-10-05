@@ -1,0 +1,33 @@
+---
+/**
+ * GA4 e Meta Pixel só carregam em produção e quando os IDs existem.
+ * PENDENTE: banner/gestão de consentimento de cookies antes de ativar (LGPD).
+ */
+import { env } from '../config/site';
+const enabled = env.appEnv === 'production';
+const { ga4Id, metaPixelId } = env;
+---
+
+<script is:inline>window.dataLayer = window.dataLayer || [];</script>
+{enabled && ga4Id && (
+  <>
+    <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>
+    <script is:inline define:vars={{ ga4Id }}>
+      function gtag(){dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('js', new Date());
+      gtag('config', ga4Id, { anonymize_ip: true });
+    </script>
+  </>
+)}
+{enabled && metaPixelId && (
+  <script is:inline define:vars={{ metaPixelId }}>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', metaPixelId);
+    fbq('track', 'PageView');
+  </script>
+)}

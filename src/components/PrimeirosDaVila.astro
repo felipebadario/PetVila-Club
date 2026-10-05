@@ -1,0 +1,107 @@
+---
+import CtaButton from './CtaButton.astro';
+import { primeiros, cta } from '../content/copy';
+---
+
+<section class="pdv" id="primeiros" aria-labelledby="pdv-title" data-parallax-scope>
+  <div class="pdv__shapes" aria-hidden="true">
+    <span class="pdv__s pdv__s--1" data-depth="24"></span>
+    <span class="pdv__s pdv__s--2" data-depth="-16"></span>
+    <span class="pdv__s pdv__s--3" data-depth="10"></span>
+  </div>
+  <div class="wrap pdv__in">
+    <h2 id="pdv-title" class="pdv__title">
+      <span data-reveal>{primeiros.headline[0]}</span>
+      <span data-reveal style="--reveal-i:1">{primeiros.headline[1]}</span>
+    </h2>
+    <div class="pdv__side">
+      <p class="pdv__sub" data-reveal style="--reveal-i:2">{primeiros.sub}</p>
+      <p class="pdv__copy" data-reveal style="--reveal-i:3">{primeiros.copy}</p>
+      <div data-reveal style="--reveal-i:4">
+        <CtaButton origin="primeiros" label={cta.short} />
+      </div>
+      <p class="pdv__note" data-reveal style="--reveal-i:5">{primeiros.note}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .pdv {
+    --px: 0;
+    --py: 0;
+    position: relative;
+    overflow: clip;
+    isolation: isolate;
+    background: var(--patinha);
+    color: var(--fucinho);
+    padding-block: var(--section);
+  }
+  .pdv__in {
+    display: grid;
+    gap: 2.5rem;
+  }
+  .pdv__title {
+    font-size: var(--step-4);
+  }
+  .pdv__title span {
+    display: block;
+  }
+  .pdv__side {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: start;
+    max-width: 34rem;
+  }
+  /* Texto sobre Patinha: sempre >= 18.66px em negrito (contraste AA para texto grande). */
+  .pdv__sub {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 700;
+    font-size: var(--step-2);
+    line-height: 1.1;
+  }
+  .pdv__copy {
+    font-size: max(1.1875rem, var(--step-1));
+    font-weight: 600;
+    line-height: 1.45;
+  }
+  .pdv__note {
+    font-size: 1.1875rem;
+    font-weight: 700;
+  }
+  .pdv__shapes > span {
+    position: absolute;
+    z-index: -1;
+    border-radius: 50%;
+    translate: calc(var(--px) * var(--d, 0) * 1px) calc(var(--py) * var(--d, 0) * 1px);
+  }
+  .pdv__s--1 {
+    width: 40vw;
+    max-width: 30rem;
+    aspect-ratio: 1;
+    right: -10vw;
+    top: -12vw;
+    background: color-mix(in srgb, var(--chamego) 28%, var(--patinha));
+  }
+  .pdv__s--2 {
+    width: 6rem;
+    aspect-ratio: 1;
+    right: 8vw;
+    bottom: 3rem;
+    background: var(--fucinho);
+  }
+  .pdv__s--3 {
+    width: 12rem;
+    aspect-ratio: 1;
+    left: 40vw;
+    bottom: -5rem;
+    border: 3px solid var(--fucinho);
+  }
+  @media (min-width: 960px) {
+    .pdv__in {
+      grid-template-columns: 1.3fr 1fr;
+      align-items: end;
+      gap: 4rem;
+    }
+  }
+</style>

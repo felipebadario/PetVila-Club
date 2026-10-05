@@ -1,0 +1,31 @@
+---
+import SimplePage from '../components/SimplePage.astro';
+import { site } from '../config/site';
+---
+
+<SimplePage title="Política de Privacidade" description="Como a PetVila Club trata os dados dos Primeiros da Vila.">
+  <h1>Política de Privacidade</h1>
+  <p class="pending">
+    <strong>Rascunho estrutural, pendente de redação e revisão jurídica.</strong> Faltam: controlador (razão social e CNPJ),
+    encarregado de dados (DPO) e contato, ferramentas que recebem os dados (CRM/automação) e prazo de retenção.
+  </p>
+
+  <h2>Quais dados coletamos</h2>
+  <p>No cadastro Primeiros da Vila: seu nome, e-mail, WhatsApp, cidade e estado; nome, porte e idade aproximada do seu cão;
+    e, se você quiser, os temas que mais fariam diferença na sua rotina. Também registramos a origem da visita (parâmetros UTM),
+    a data e a hora do cadastro e a versão do consentimento aceito.</p>
+
+  <h2>Para que usamos</h2>
+  <p>Para avisar sobre o lançamento da {site.name}, enviar novidades e condições de estreia, e entender melhor a rotina
+    de quem vive com um cão para planejar o clube.</p>
+
+  <h2>Base legal</h2>
+  <p>Consentimento (art. 7º, I, da LGPD), que você pode revogar a qualquer momento.</p>
+
+  <h2>Seus direitos</h2>
+  <p>Você pode pedir acesso, correção, portabilidade ou exclusão dos seus dados e revogar o consentimento.
+    {site.contactEmail ? <>Escreva para <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</> : <span class="pending-inline">[PENDENTE: canal de contato]</span>}</p>
+
+  <h2>Compartilhamento</h2>
+  <p><span class="pending-inline">[PENDENTE: listar operadores, como hospedagem e ferramenta de e-mail/CRM.]</span></p>
+</SimplePage>

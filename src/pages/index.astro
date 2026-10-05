@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Rotina from '../components/Rotina.astro';
+import Curadoria from '../components/Curadoria.astro';
+import Club from '../components/Club.astro';
+import Manifesto from '../components/Manifesto.astro';
+import PrimeirosDaVila from '../components/PrimeirosDaVila.astro';
+import Footer from '../components/Footer.astro';
+import LeadDialog from '../components/LeadDialog.astro';
+---
+
+<BaseLayout>
+  <Header />
+  <main id="conteudo">
+    <Hero />
+    <Rotina />
+    <Curadoria />
+    <Club />
+    <Manifesto />
+    <PrimeirosDaVila />
+  </main>
+  <Footer />
+  <LeadDialog />
+  <script>
+    import { initReveal, initPointerParallax, initScrollParallax, initMagnetic, initCursor, initHeader } from '../scripts/motion';
+    import { initRotina, initCuradoria, initClub, initManifesto } from '../scripts/sections';
+    import { initLeadForm } from '../scripts/lead-form';
+    import { captureAttribution, track } from '../lib/tracking';
+
+    captureAttribution();
+    initLeadForm();
+    initHeader();
+    initReveal();
+    initRotina();
+    initCuradoria();
+    initClub();
+    initManifesto();
+    initPointerParallax();
+    initScrollParallax();
+    initMagnetic();
+    initCursor();
+
+    // Profundidade de leitura por seção (storytelling): dispara uma vez por seção.
+    const seen = new Set<string>();
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const id = (e.target as HTMLElement).id || e.target.getAttribute('aria-label') || '';
+        if (e.isIntersecting && !seen.has(id)) {
+          seen.add(id);
+          track('section_view', { section: id });
+        }
+      }
+    }, { threshold: 0.35 });
+    document.querySelectorAll('main > section').forEach((s) => io.observe(s));
+  </script>
+
+  <style is:global>
+    .pv-cursor {
+      position: fixed;
+      left: 0;
+      top: 0;
+      z-index: 300;
+      width: 14px;
+      height: 14px;
+      margin: -7px 0 0 -7px;
+      border-radius: 50%;
+      background: var(--patinha);
+      pointer-events: none;
+      mix-blend-mode: multiply;
+      transition:
+        width 350ms var(--ease-spring),
+        height 350ms var(--ease-spring),
+        margin 350ms var(--ease-spring),
+        opacity 200ms ease;
+    }
+    .pv-cursor.is-hover {
+      width: 54px;
+      height: 54px;
+      margin: -27px 0 0 -27px;
+      opacity: 0.55;
+    }
+    .pv-cursor.is-out {
+      opacity: 0;
+    }
+    dialog[open] ~ .pv-cursor,
+    body:has(dialog[open]) .pv-cursor {
+      z-index: 2147483647;
+    }
+  </style>
+</BaseLayout>
