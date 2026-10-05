@@ -1,6 +1,6 @@
 # PetVila Club · Landing Page de pré-lançamento — Primeira entrega
 
-Data: 05/10/2026 · Status: v0.1 funcional, com placeholders onde faltam assets da marca.
+Data: 05/10/2026 · Status: v0.2 funcional. Fotos provisórias do Unsplash, cadastro ligado a planilha Google, CRM em `/crm`. Logo, fontes e ilustrações ainda aguardam o brand book.
 
 ## 1. Brand book
 
@@ -112,6 +112,9 @@ Sem o arquivo não consigo listar o que existe nele. O que a página já está p
 
 ## 8. Assets que ainda precisamos produzir
 
+**Fotos provisórias**: Hero, os 5 momentos da Rotina e as 4 categorias da Curadoria já usam fotos do Unsplash (licença de uso comercial livre), servidas pelo CDN do Unsplash em WebP/AVIF no tamanho certo, com um véu quente da paleta para unificar. Lista e troca em `src/content/photos.ts`. Não consegui gerar imagens com IA neste ambiente; as ilustrações seguem como formas da marca até o brand book.
+
+
 Cada placeholder na página tem uma etiqueta dizendo exatamente o que vai ali.
 
 | Asset | Qtde | Formato sugerido |
@@ -128,8 +131,8 @@ As fotos entram pelo componente `<Image>` do Astro (gera WebP/AVIF e tamanhos re
 
 ## 9. Pendências de negócio (não assumi nada)
 
-1. **Destino dos leads**: qual ferramenta recebe os cadastros (planilha, CRM, automação)? Até definir, a rota `/api/leads` aceita qualquer webhook via `LEADS_WEBHOOK_URL`. **Sem ele configurado, o formulário em produção responde "indisponível" de propósito para não perder leads em silêncio.**
-2. **Hospedagem**: confirmar Vercel (recomendado) ou outra.
+1. ~~Destino dos leads~~ **Decidido**: planilha Google + CRM próprio em `/crm` (ver seção 12). Sem a planilha configurada, o formulário em produção responde "indisponível" de propósito para não perder leads em silêncio.
+2. ~~Hospedagem~~ **Decidido**: Vercel.
 3. **Instagram oficial** (@) e **e-mail de contato**: links ficam ocultos até preencher `src/config/site.ts`.
 4. **Razão social e CNPJ** para rodapé e Política de Privacidade.
 5. **Política de Privacidade e Termos**: há um rascunho estrutural marcado como pendente de revisão jurídica. Faltam controlador, encarregado (DPO), operadores e prazo de retenção.
@@ -159,9 +162,9 @@ Levantado por consulta pública de DNS e RDAP em 05/10/2026.
 
 **Registros que não podem ser tocados**: todos os de e-mail do `.com` (MX, os dois TXT, `autodiscover` e quaisquer outros do Microsoft 365 que existam na zona, como `_sip`, `lyncdiscover`, `enterpriseregistration`).
 
-**Pergunta antes de mexer**: existe algo na Lovable em `petvilaclub.com` que precise ser preservado?
+**Lovable**: Felipe confirmou em 05/10/2026 que nada na Lovable precisa ser mantido; os dois domínios vêm para a Vercel.
 
-### Proposta de alteração (só após sua confirmação, com hospedagem na Vercel)
+### Alterações aprovadas (hospedagem na Vercel)
 
 Os valores finais são os que a Vercel mostrar ao adicionar cada domínio ao projeto; os abaixo são os padrões dela.
 
@@ -177,6 +180,35 @@ Além disso, se houver encaminhamento ("Forwarding") ativo no painel da GoDaddy 
 
 Na Vercel: `petvilaclub.com.br` como domínio principal; `www.petvilaclub.com.br`, `petvilaclub.com` e `www.petvilaclub.com` como redirect 308 para ele (o `vercel.json` também garante isso). HTTPS é emitido automaticamente.
 
+### Passo a passo do deploy
+
+1. Repositório no GitHub com este código (push feito daqui assim que o repositório existir).
+2. Vercel: Add New Project, importar o repositório (Astro é detectado sozinho).
+3. Variáveis em Production: `PUBLIC_APP_ENV=production`, `PUBLIC_SITE_URL=https://petvilaclub.com.br`, `LEADS_SHEETS_URL`, `LEADS_SHEETS_TOKEN`, `CRM_PASSWORD`, `CRM_SESSION_SECRET`. Em Preview: as mesmas, com `PUBLIC_APP_ENV=preview`.
+4. Vercel > Settings > Domains: adicionar `petvilaclub.com.br` (principal), `www.petvilaclub.com.br`, `petvilaclub.com` e `www.petvilaclub.com` (redirecionando para o principal).
+5. GoDaddy > DNS de cada domínio: aplicar a tabela acima com os valores que a Vercel mostrar; desligar "Forwarding" se estiver ativo; **não tocar nos registros de e-mail do `.com`**.
+6. Na Lovable, remover o domínio customizado do projeto antigo (evita conflito de verificação).
+
 ### Validação depois do deploy
 
 SSL nos 4 hosts, redirect 308 de `.com`, `www.com` e `www.com.br` para `https://petvilaclub.com.br` preservando caminho, `robots.txt` liberado só em produção, `sitemap.xml`, canonical e Open Graph, 404 customizada, envio real do formulário chegando no destino, Lighthouse mobile e animações em produção.
+
+## 12. Leads: planilha Google + CRM
+
+**Planilha (base)**: cada cadastro vira uma linha na aba `Leads`, com todas as colunas da seção 10 mais `status`, `nota` e `atualizado_em`. A ponte é um Apps Script (`integrations/google-sheets/Code.gs`) publicado como App da Web e protegido por um TOKEN. Textos que começam com `=`, `+`, `-` ou `@` são gravados como texto para não virarem fórmula.
+
+Instalação (uma vez, na conta Google da PetVila):
+1. Criar a planilha e abrir Extensões > Apps Script.
+2. Colar `Code.gs`, salvar.
+3. Configurações do projeto > Propriedades do script: `TOKEN` = senha longa aleatória.
+4. Implantar > Nova implantação > App da Web; executar como **Eu**, acesso **Qualquer pessoa**. Autorizar.
+5. Copiar a URL `/exec` para `LEADS_SHEETS_URL` e o TOKEN para `LEADS_SHEETS_TOKEN` na Vercel.
+
+**CRM (`https://petvilaclub.com.br/crm`)**: tela protegida por senha (`CRM_PASSWORD`, sessão de 12 h em cookie assinado), fora do Google e do sitemap. Mostra:
+- totais (cadastros, hoje, últimos 7 dias, sem contato);
+- distribuição por porte, interesses, origem (UTM) e estado;
+- busca e filtros por status, porte, interesse e estado;
+- tabela com link direto para WhatsApp e e-mail, **status editável** (novo, contatado, qualificado, descartado) e **nota** por lead, gravados na própria planilha;
+- exportação CSV do que está filtrado.
+
+Os nomes de status são uma proposta; dá para trocar em `store.ts` e `Code.gs`. Quando a operação crescer, a mesma interface `LeadStore` permite trocar a planilha por um CRM dedicado sem mexer no site.

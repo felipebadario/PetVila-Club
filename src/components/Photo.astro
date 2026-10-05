@@ -1,0 +1,79 @@
+---
+/**
+ * Foto com forma da marca (blob, arco, círculo) e leve tratamento de cor para
+ * unificar fotos de origens diferentes. Hoje usa o CDN do Unsplash; para fotos
+ * próprias, troque por <Image> de astro:assets mantendo o mesmo invólucro.
+ */
+import type { StockPhoto } from '../content/photos';
+
+interface Props {
+  photo: StockPhoto;
+  shape?: 'blob' | 'arch' | 'circle' | 'rect';
+  ratio?: string; // ex.: '3:4'
+  sizes?: string;
+  tone?: 'patinha' | 'terra' | 'fucinho';
+  priority?: boolean;
+  decorative?: boolean;
+  class?: string;
+  style?: string;
+}
+const {
+  photo,
+  shape = 'rect',
+  ratio = '4:3',
+  sizes = '(min-width: 960px) 45vw, 90vw',
+  tone = 'terra',
+  priority = false,
+  decorative = false,
+  class: cls = '',
+  style = '',
+} = Astro.props;
+
+const widths = [480, 768, 1080, 1440, 1920];
+const url = (w: number) =>
+  `https://images.unsplash.com/photo-${photo.id}?auto=format&fit=crop&crop=faces,entropy&q=68&w=${w}&ar=${ratio}`;
+---
+
+<div class={`photo photo--${shape} ${cls}`} data-tone={tone} style={style}>
+  <img
+    src={url(1080)}
+    srcset={widths.map((w) => `${url(w)} ${w}w`).join(', ')}
+    sizes={sizes}
+    alt={decorative ? '' : photo.alt}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    decoding="async"
+  />
+</div>
+
+<style>
+  .photo {
+    --c: var(--terra);
+    position: relative;
+    overflow: hidden;
+    background: var(--c);
+    isolation: isolate;
+  }
+  .photo[data-tone='patinha'] { --c: var(--patinha); }
+  .photo[data-tone='fucinho'] { --c: var(--fucinho); }
+  .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.88) contrast(1.02) sepia(0.08);
+  }
+  /* Véu quente da paleta: aproxima fotos de bancos diferentes da linguagem PetVila. */
+  .photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--patinha);
+    mix-blend-mode: soft-light;
+    opacity: 0.28;
+    pointer-events: none;
+  }
+  .photo--blob { border-radius: 58% 42% 52% 48% / 46% 56% 44% 54%; }
+  .photo--arch { border-radius: 999px 999px 1.5rem 1.5rem; }
+  .photo--circle { border-radius: 50%; }
+  .photo--rect { border-radius: 1.5rem; }
+</style>

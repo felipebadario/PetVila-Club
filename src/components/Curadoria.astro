@@ -1,5 +1,6 @@
 ---
-import Placeholder from './Placeholder.astro';
+import Photo from './Photo.astro';
+import { photos } from '../content/photos';
 import { curadoria } from '../content/copy';
 const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
 ---
@@ -23,6 +24,7 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
           <span class="cur__num" aria-hidden="true">0{i + 1}</span>
           <h3 class="cur__name">{c.label}</h3>
           <p class="cur__desc">{c.copy}</p>
+          <Photo photo={photos.curadoria[c.id as keyof typeof photos.curadoria]} shape="circle" ratio="1:1" sizes="5rem" decorative class="cur__thumb" />
         </li>
       ))}
     </ul>
@@ -33,7 +35,7 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
   <!-- Imagem que segue o cursor (só desktop com mouse). -->
   <div class="cur__float" aria-hidden="true" data-cur-float>
     {curadoria.categories.map((c, i) => (
-      <Placeholder kind="foto" label={c.label.toLowerCase()} tone={tones[i]} shape="arch" class="cur__float-img" />
+      <Photo photo={photos.curadoria[c.id as keyof typeof photos.curadoria]} shape="arch" ratio="3:4" sizes="15rem" tone={tones[i] === 'fucinho' ? 'fucinho' : tones[i]} decorative class="cur__float-img" />
     ))}
   </div>
 </section>
@@ -133,6 +135,16 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
   .cur__float {
     display: none;
   }
+  .cur__item {
+    grid-template-columns: auto 1fr auto;
+  }
+  .cur__item :global(.cur__thumb) {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: center;
+    width: 4.5rem;
+    height: 4.5rem;
+  }
 
   @media (min-width: 960px) {
     .cur__head {
@@ -143,8 +155,13 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
       grid-column: 1 / -1;
     }
     .cur__item {
-      grid-template-columns: 4rem 1fr 1fr;
+      grid-template-columns: 4rem 1fr 1fr auto;
+      column-gap: 1.5rem;
       padding-block: 1.8rem;
+    }
+    .cur__item :global(.cur__thumb) {
+      grid-column: 4;
+      grid-row: 1;
     }
     .cur__desc {
       grid-column: 3;
@@ -162,6 +179,12 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
     }
     .cur__item:hover .cur__desc {
       color: var(--fucinho);
+    }
+    .cur__item :global(.cur__thumb) {
+      display: none;
+    }
+    .cur__item {
+      grid-template-columns: 4rem 1fr 1fr;
     }
     .cur__float {
       display: block;

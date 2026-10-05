@@ -15,7 +15,7 @@ cp .env.example .env
 npm run dev        # http://localhost:4321
 ```
 
-Sem `LEADS_WEBHOOK_URL`, os cadastros feitos em desenvolvimento vão para `.data/leads.jsonl`.
+Sem planilha configurada, os cadastros feitos em desenvolvimento vão para `.data/leads.jsonl`, e o CRM local (`/crm`, com `CRM_PASSWORD` no `.env`) lê esse arquivo.
 
 ## Scripts
 
@@ -33,7 +33,8 @@ Em produção, configure no painel da hospedagem (nunca no repositório):
 
 - `PUBLIC_APP_ENV=production` (fora disso a página sai com `noindex` e o robots bloqueia tudo)
 - `PUBLIC_SITE_URL=https://petvilaclub.com.br`
-- `LEADS_WEBHOOK_URL` e, se houver, `LEADS_WEBHOOK_TOKEN`
+- `LEADS_SHEETS_URL` e `LEADS_SHEETS_TOKEN` (planilha Google; instalação em `docs/primeira-entrega.md`, seção 12)
+- `CRM_PASSWORD` e `CRM_SESSION_SECRET` (acesso a `/crm`)
 - `PUBLIC_GA4_ID`, `PUBLIC_META_PIXEL_ID` quando o consentimento de cookies estiver pronto
 
 ## Onde mexer
@@ -42,7 +43,9 @@ Em produção, configure no painel da hospedagem (nunca no repositório):
 - Instagram, contato, razão social: `src/config/site.ts`
 - Logo oficial: salve em `src/assets/brand/logo-petvila.svg` (troca automática)
 - Cores e fontes: `src/styles/global.css`
-- Destino dos leads: `src/lib/leads/store.ts`
+- Destino dos leads: `src/lib/leads/store.ts` e `integrations/google-sheets/Code.gs`
+- CRM: `src/pages/crm/index.astro` e `src/scripts/crm.ts`
+- Fotos provisórias: `src/content/photos.ts`
 - Eventos de tracking: `src/lib/tracking.ts`
 - Assets pendentes: procure por `<Placeholder` nos componentes
 

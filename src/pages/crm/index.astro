@@ -1,0 +1,352 @@
+---
+/**
+ * CRM dos Primeiros da Vila: lista, filtros, indicadores, status e notas.
+ * Lê a mesma planilha que recebe os cadastros. Protegido por senha (CRM_PASSWORD).
+ */
+import '../../styles/global.css';
+import { isAuthed, crmConfigured } from '../../lib/crm/auth';
+import { getLeadStore, LEAD_STATUSES, type CrmLead } from '../../lib/leads/store';
+import { form, ufs } from '../../content/copy';
+
+export const prerender = false;
+
+Astro.response.headers.set('x-robots-tag', 'noindex, nofollow');
+Astro.response.headers.set('cache-control', 'no-store');
+
+const authed = await isAuthed(Astro.cookies);
+const loginError = Astro.url.searchParams.has('erro');
+
+let leads: CrmLead[] = [];
+let loadError = '';
+if (authed) {
+  const store = getLeadStore();
+  if (!store?.list) loadError = 'Nenhuma planilha configurada (LEADS_SHEETS_URL). O CRM precisa dela para listar os leads.';
+  else {
+    try {
+      leads = (await store.list()).sort((a, b) => (a.criado_em < b.criado_em ? 1 : -1));
+    } catch (err) {
+      loadError = 'Não consegui ler a planilha agora. Recarregue a página em instantes.';
+      console.error('[crm] falha ao listar', err instanceof Error ? err.message : err);
+    }
+  }
+}
+
+const labels = {
+  porte: Object.fromEntries(form.sizes.map((o) => [o.value, o.label])),
+  idade: Object.fromEntries(form.ages.map((o) => [o.value, o.label])),
+  interesse: Object.fromEntries(form.interests.map((o) => [o.value, o.label])),
+};
+// JSON seguro dentro de <script>: escapa "<" para não fechar a tag.
+const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>CRM · Primeiros da Vila</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="crm-body">
+    {!authed ? (
+      <main class="login">
+        <form method="post" action="/crm/login" class="login__card">
+          <p class="eyebrow">PetVila Club</p>
+          <h1>CRM dos Primeiros da Vila</h1>
+          {!crmConfigured() ? (
+            <p class="login__err">O acesso ainda não foi configurado. Defina CRM_PASSWORD nas variáveis de ambiente.</p>
+          ) : (
+            <>
+              <label for="senha">Senha</label>
+              <input id="senha" name="senha" type="password" autocomplete="current-password" required autofocus />
+              {loginError && <p class="login__err" role="alert">Senha incorreta.</p>}
+              <button type="submit">Entrar</button>
+            </>
+          )}
+        </form>
+      </main>
+    ) : (
+      <div class="crm">
+        <header class="crm__top">
+          <div>
+            <p class="eyebrow">PetVila Club</p>
+            <h1>Primeiros da Vila</h1>
+          </div>
+          <div class="crm__top-actions">
+            <button type="button" class="btn btn--ghost" data-export>Exportar CSV</button>
+            <form method="post" action="/crm/logout"><button class="btn btn--ghost" type="submit">Sair</button></form>
+          </div>
+        </header>
+
+        {loadError && <p class="crm__alert" role="alert">{loadError}</p>}
+
+        <section class="kpis" aria-label="Resumo">
+          <div class="kpi"><span class="kpi__n" data-kpi="total">0</span><span class="kpi__l">cadastros</span></div>
+          <div class="kpi"><span class="kpi__n" data-kpi="hoje">0</span><span class="kpi__l">hoje</span></div>
+          <div class="kpi"><span class="kpi__n" data-kpi="semana">0</span><span class="kpi__l">últimos 7 dias</span></div>
+          <div class="kpi"><span class="kpi__n" data-kpi="novos">0</span><span class="kpi__l">sem contato</span></div>
+        </section>
+
+        <section class="breakdown" aria-label="Distribuição">
+          <div class="bd"><h2>Porte</h2><ol data-bd="porte"></ol></div>
+          <div class="bd"><h2>O que faria diferença</h2><ol data-bd="interesses"></ol></div>
+          <div class="bd"><h2>Origem</h2><ol data-bd="origem"></ol></div>
+          <div class="bd"><h2>Estados</h2><ol data-bd="uf"></ol></div>
+        </section>
+
+        <section class="filters" aria-label="Filtros">
+          <input type="search" placeholder="Buscar nome, cão, e-mail, cidade" data-f="q" aria-label="Buscar" />
+          <select data-f="status" aria-label="Status">
+            <option value="">Todos os status</option>
+            {LEAD_STATUSES.map((s) => <option value={s}>{s}</option>)}
+          </select>
+          <select data-f="porte" aria-label="Porte">
+            <option value="">Todos os portes</option>
+            {form.sizes.map((o) => <option value={o.value}>{o.label}</option>)}
+          </select>
+          <select data-f="interesse" aria-label="Interesse">
+            <option value="">Todos os interesses</option>
+            {form.interests.map((o) => <option value={o.value}>{o.label}</option>)}
+          </select>
+          <select data-f="uf" aria-label="Estado">
+            <option value="">Todos os estados</option>
+            {ufs.map((u) => <option value={u}>{u}</option>)}
+          </select>
+          <p class="filters__count" data-count aria-live="polite"></p>
+        </section>
+
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Data</th><th>Tutor</th><th>Cão</th><th>Contato</th><th>Cidade</th><th>Interesses</th><th>Origem</th><th>Status</th><th>Nota</th>
+              </tr>
+            </thead>
+            <tbody data-rows></tbody>
+          </table>
+          <p class="empty" data-empty hidden>Nenhum lead com esses filtros.</p>
+        </div>
+        <p class="toast" data-toast role="status" aria-live="polite"></p>
+      </div>
+    )}
+
+    {authed && <script id="crm-data" type="application/json" set:html={payload} />}
+    {authed && (
+      <script>
+        import { initCrm } from '../../scripts/crm';
+        initCrm();
+      </script>
+    )}
+  </body>
+</html>
+
+<style is:global>
+  .crm-body {
+    min-height: 100svh;
+    font-size: 0.95rem;
+  }
+  .crm-body::before { display: none; }
+  .crm-body h1 {
+    font-size: clamp(1.8rem, 1.2rem + 2vw, 2.8rem);
+  }
+  .login {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: 1.25rem;
+  }
+  .login__card {
+    width: min(26rem, 100%);
+    display: grid;
+    gap: 0.75rem;
+    padding: 2rem;
+    border: 1.5px solid var(--fucinho);
+    border-radius: 1.5rem;
+  }
+  .login__card h1 { margin-bottom: 0.75rem; }
+  .login__card label { font-weight: 600; font-size: 0.85rem; }
+  .login__card input {
+    min-height: 3rem;
+    padding: 0 1rem;
+    border: 1.5px solid var(--fucinho);
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, white 45%, var(--chamego));
+    font-size: 1rem;
+  }
+  .login__card button,
+  .btn {
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    border: 0;
+    background: var(--fucinho);
+    color: var(--chamego);
+    font-weight: 700;
+  }
+  .btn--ghost {
+    background: transparent;
+    color: var(--fucinho);
+    border: 1.5px solid var(--fucinho);
+  }
+  .login__err,
+  .crm__alert {
+    color: #8c1d07;
+    font-weight: 600;
+  }
+  .crm__alert {
+    padding: 0.9rem 1.1rem;
+    border: 1.5px dashed #8c1d07;
+    border-radius: 1rem;
+  }
+
+  .crm {
+    max-width: 96rem;
+    margin-inline: auto;
+    padding: 1.5rem clamp(1rem, 3vw, 2.5rem) 4rem;
+    display: grid;
+    gap: 1.5rem;
+  }
+  .crm__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+  }
+  .crm__top h1 { margin-top: 0.4rem; }
+  .crm__top-actions { display: flex; gap: 0.5rem; }
+
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 0.75rem;
+  }
+  .kpi {
+    display: grid;
+    padding: 1rem 1.25rem;
+    border-radius: 1.25rem;
+    background: color-mix(in srgb, var(--terra) 8%, var(--chamego));
+  }
+  .kpi:first-child { background: var(--terra); color: var(--chamego); }
+  .kpi__n {
+    font-family: var(--font-display);
+    font-variation-settings: 'SOFT' 100;
+    font-weight: 600;
+    font-size: 2.4rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi__l { font-size: 0.85rem; font-weight: 600; }
+
+  .breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1.25rem 2rem;
+  }
+  .bd h2 {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.6rem;
+  }
+  .bd ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; }
+  .bd li {
+    display: grid;
+    grid-template-columns: 7.5rem 1fr 2.5rem;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.85rem;
+  }
+  .bd li span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bd .bar { height: 0.6rem; border-radius: 999px; background: color-mix(in srgb, var(--fucinho) 10%, transparent); overflow: hidden; }
+  .bd .bar i { display: block; height: 100%; background: var(--patinha); border-radius: inherit; }
+  .bd .n { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding-block: 0.75rem;
+    background: var(--chamego);
+  }
+  .filters input,
+  .filters select {
+    min-height: 2.6rem;
+    padding: 0 0.85rem;
+    border: 1.5px solid var(--line);
+    border-radius: 999px;
+    background: color-mix(in srgb, white 40%, var(--chamego));
+  }
+  .filters input { flex: 1 1 16rem; }
+  .filters__count { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  .table-wrap { overflow-x: auto; border: 1.5px solid var(--fucinho); border-radius: 1.25rem; }
+  .tbl { width: 100%; border-collapse: collapse; min-width: 68rem; }
+  .tbl th {
+    text-align: left;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.8rem 0.9rem;
+    border-bottom: 1.5px solid var(--fucinho);
+    white-space: nowrap;
+  }
+  .tbl td { padding: 0.75rem 0.9rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .tbl td small { display: block; color: var(--ink-soft); }
+  .tbl a { text-underline-offset: 3px; }
+  .tbl .date { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+  .chips span {
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    background: color-mix(in srgb, var(--terra) 10%, var(--chamego));
+  }
+  .tbl select {
+    min-height: 2.25rem;
+    border-radius: 999px;
+    padding: 0 0.6rem;
+    border: 1.5px solid var(--fucinho);
+    background: var(--chamego);
+    font-weight: 600;
+  }
+  .tbl select[data-status='novo'] { background: var(--patinha); color: var(--fucinho); border-color: var(--patinha); }
+  .tbl select[data-status='contatado'] { background: color-mix(in srgb, var(--terra) 15%, var(--chamego)); }
+  .tbl select[data-status='qualificado'] { background: var(--terra); color: var(--chamego); }
+  .tbl select[data-status='descartado'] { opacity: 0.55; }
+  .tbl textarea {
+    width: 14rem;
+    min-height: 2.25rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 0.6rem;
+    background: transparent;
+    resize: vertical;
+    font-size: 0.85rem;
+  }
+  .empty { padding: 2rem; text-align: center; }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.5rem;
+    translate: -50% 0;
+    padding: 0.7rem 1.2rem;
+    border-radius: 999px;
+    background: var(--fucinho);
+    color: var(--chamego);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 250ms ease;
+    pointer-events: none;
+  }
+  .toast.is-on { opacity: 1; }
+</style>

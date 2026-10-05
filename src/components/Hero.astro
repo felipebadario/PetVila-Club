@@ -1,23 +1,22 @@
 ---
 import CtaButton from './CtaButton.astro';
-import Placeholder from './Placeholder.astro';
+import Photo from './Photo.astro';
+import { photos } from '../content/photos';
 import { hero } from '../content/copy';
 const words = hero.headline.split(' ');
 ---
 
 <section class="hero" id="topo" data-parallax-scope>
   <!-- Elementos gráficos provisórios: substituir pelas ilustrações oficiais do brand book. -->
-  <div class="hero__art" aria-hidden="true">
-    <div class="hero__shape hero__shape--sun" data-depth="-18" data-scroll-speed="0.25"></div>
-    <div class="hero__shape hero__shape--dot" data-depth="30" data-scroll-speed="-0.15"></div>
-    <div class="hero__shape hero__shape--ring" data-depth="12" data-scroll-speed="0.4"></div>
+  <div class="hero__art">
+    <div aria-hidden="true" class="hero__shape hero__shape--sun" data-depth="-18" data-scroll-speed="0.25"></div>
+    <div aria-hidden="true" class="hero__shape hero__shape--dot" data-depth="30" data-scroll-speed="-0.15"></div>
+    <div aria-hidden="true" class="hero__shape hero__shape--ring" data-depth="12" data-scroll-speed="0.4"></div>
     <div class="hero__photo" data-depth="-8" data-scroll-speed="0.12">
-      <Placeholder kind="foto" label="tutor e cão, momento de rotina" tone="terra" shape="arch" class="hero__ph" />
+      <Photo photo={photos.hero} shape="arch" ratio="3:4" sizes="(min-width: 760px) 24rem, 40vw" priority class="hero__ph" />
     </div>
-    <div class="hero__ill" data-depth="22" data-scroll-speed="-0.3">
-      <Placeholder kind="ilustração" label="elemento da marca" tone="patinha" shape="blob" class="hero__ph" />
-    </div>
-    <svg class="hero__squiggle" data-depth="-26" viewBox="0 0 220 60"><path d="M4 40 C 30 4, 52 4, 70 32 S 110 58, 130 28 S 178 2, 216 30" fill="none" stroke="var(--fucinho)" stroke-width="4" stroke-linecap="round" pathLength="1" /></svg>
+    <div aria-hidden="true" class="hero__ill" data-depth="22" data-scroll-speed="-0.3"></div>
+    <svg aria-hidden="true" class="hero__squiggle" data-depth="-26" viewBox="0 0 220 60"><path d="M4 40 C 30 4, 52 4, 70 32 S 110 58, 130 28 S 178 2, 216 30" fill="none" stroke="var(--fucinho)" stroke-width="4" stroke-linecap="round" pathLength="1" /></svg>
   </div>
 
   <div class="hero__content wrap">
@@ -92,7 +91,11 @@ const words = hero.headline.split(' ');
     top: 17vh;
     rotate: 4deg;
   }
+  /* Forma provisória: substituir pela ilustração oficial da marca. */
   .hero__ill {
+    background: var(--patinha);
+    border-radius: 58% 42% 52% 48% / 46% 56% 44% 54%;
+    border: 3px solid var(--fucinho);
     width: min(22vw, 11rem);
     aspect-ratio: 1;
     right: 34vw;

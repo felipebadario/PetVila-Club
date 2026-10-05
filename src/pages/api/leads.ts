@@ -23,7 +23,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const store = getLeadStore();
   if (!store) {
-    console.error('[leads] LEADS_WEBHOOK_URL não configurado: lead não armazenado.');
+    console.error('[leads] nenhum destino configurado (LEADS_SHEETS_URL ou LEADS_WEBHOOK_URL): lead não armazenado.');
     return json(503, { message: 'Cadastro indisponível no momento. Tenta de novo em instantes?' });
   }
 

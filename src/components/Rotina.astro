@@ -1,5 +1,6 @@
 ---
-import Placeholder from './Placeholder.astro';
+import Photo from './Photo.astro';
+import { photos } from '../content/photos';
 import { rotina } from '../content/copy';
 // Cada momento ganha uma combinação de cor da paleta e uma forma.
 const looks = [
@@ -48,8 +49,8 @@ const looks = [
               style={`--rot:${looks[i].rot}deg`}
             >
               <div class="rot__visual">
-                <Placeholder kind="foto" label={`momento ${m.label.toLowerCase()}`} tone={looks[i].tone} shape={looks[i].shape} class="rot__photo" />
-                <Placeholder kind="ilustração" label={m.label.toLowerCase()} tone="chamego" shape="circle" class="rot__badge" />
+                <Photo photo={photos.rotina[m.id]} shape={looks[i].shape} ratio="4:3" tone={looks[i].tone === "fucinho" ? "fucinho" : looks[i].tone} class="rot__photo" />
+                <span class="rot__badge" aria-hidden="true"></span>
               </div>
               <figcaption class="rot__copy">
                 <span class="rot__copy-label">{m.label}</span>
@@ -162,16 +163,18 @@ const looks = [
     inset: 0;
     rotate: var(--rot);
   }
-  .rot :global(.rot__badge) {
+  .rot__badge {
     position: absolute;
-    width: 30%;
+    width: 22%;
+    border-radius: 50%;
+    background: var(--patinha);
     aspect-ratio: 1;
     right: -2%;
     bottom: -6%;
     transform: rotate(calc(var(--rot) * -3));
     transition: transform 1.2s var(--ease-spring);
   }
-  .rot__panel:not([data-active]) :global(.rot__badge) {
+  .rot__panel:not([data-active]) .rot__badge {
     transform: scale(0.4) rotate(-40deg);
   }
   .rot__copy {
