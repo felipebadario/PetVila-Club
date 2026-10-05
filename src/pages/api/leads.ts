@@ -4,27 +4,43 @@ import { getLeadStore } from '../../lib/leads/store';
 
 export const prerender = false;
 
-const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+// Domínios alternativos que redirecionam para o canônico. Uma aba aberta antes do
+// redirecionamento ainda envia o formulário para lá e o POST chega aqui como cross-origin.
+const ALT_ORIGINS = new Set(['https://petvilaclub.com', 'https://www.petvilaclub.com', 'https://www.petvilaclub.com.br']);
+
+const cors = (request: Request): Record<string, string> => {
+  const origin = request.headers.get('origin') || '';
+  return ALT_ORIGINS.has(origin) ? { 'access-control-allow-origin': origin, vary: 'Origin' } : {};
+};
+
+const json = (status: number, body: unknown, extra: Record<string, string> = {}) =>
+  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', ...extra } });
+
+export const OPTIONS: APIRoute = ({ request }) =>
+  new Response(null, {
+    status: 204,
+    headers: { ...cors(request), 'access-control-allow-methods': 'POST', 'access-control-allow-headers': 'content-type', 'access-control-max-age': '86400' },
+  });
 
 export const POST: APIRoute = async ({ request }) => {
+  const send = (status: number, body: unknown) => json(status, body, cors(request));
   let input: Record<string, unknown>;
   try {
     input = await request.json();
   } catch {
-    return json(400, { message: 'Requisição inválida.' });
+    return send(400, { message: 'Requisição inválida.' });
   }
 
   // Honeypot: robôs preenchem o campo invisível. Respondemos ok e descartamos.
-  if (typeof input.website === 'string' && input.website.trim()) return json(200, { ok: true });
+  if (typeof input.website === 'string' && input.website.trim()) return send(200, { ok: true });
 
   const { ok, data, errors } = validateLead(input);
-  if (!ok) return json(422, { message: 'Confira os dados do cadastro.', errors });
+  if (!ok) return send(422, { message: 'Confira os dados do cadastro.', errors });
 
   const store = getLeadStore();
   if (!store) {
     console.error('[leads] nenhum destino configurado (LEADS_SHEETS_URL ou LEADS_WEBHOOK_URL): lead não armazenado.');
-    return json(503, { message: 'Cadastro indisponível no momento. Tenta de novo em instantes?' });
+    return send(503, { message: 'Cadastro indisponível no momento. Tenta de novo em instantes?' });
   }
 
   const lead: StoredLead = { id: crypto.randomUUID(), criado_em: new Date().toISOString(), ...data };
@@ -32,9 +48,9 @@ export const POST: APIRoute = async ({ request }) => {
     await store.save(lead);
   } catch (err) {
     console.error('[leads] falha ao salvar', lead.id, err instanceof Error ? err.message : err);
-    return json(502, { message: 'Não conseguimos registrar agora. Tenta de novo?' });
+    return send(502, { message: 'Não conseguimos registrar agora. Tenta de novo?' });
   }
-  return json(201, { ok: true });
+  return send(201, { ok: true });
 };
 
 export const ALL: APIRoute = () => json(405, { message: 'Método não permitido.' });
