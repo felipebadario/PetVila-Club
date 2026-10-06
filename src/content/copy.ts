@@ -7,7 +7,6 @@ export const cta = {
 
 export const hero = {
   headline: 'Cuidado que faz parte da rotina.',
-  support: 'Um clube criado para tornar a vida com seu cão mais prática, divertida e especial.',
 };
 
 export type MomentId = 'comer' | 'brincar' | 'passear' | 'cuidar' | 'junto';
@@ -39,10 +38,46 @@ export const curadoria = {
   ],
 };
 
+/**
+ * Como funciona o Club. A entrega é sempre mensal; 3, 6 e 12 meses são a
+ * duração do ciclo, nunca a frequência. Não prometer benefícios além dos definidos.
+ */
+export const comoFunciona = {
+  headline: 'Como funciona o Club',
+  intro:
+    'A PetVila é um clube de assinatura mensal para cães. Todo mês, uma nova curadoria de produtos chega para deixar a rotina com seu cão mais prática, interessante e cheia de descobertas.',
+  steps: {
+    vila: {
+      title: 'Escolha sua Vila',
+      copy: 'Dois planos, o mesmo cuidado na escolha de cada produto.',
+    },
+    ciclo: {
+      title: 'Escolha seu ciclo',
+      copy: 'Assine por 3, 6 ou 12 meses. O ciclo mínimo é de 3 meses.',
+    },
+    mensal: {
+      title: 'Receba todos os meses',
+      copy: 'Seja qual for o ciclo, uma nova curadoria PetVila chega para o seu cão todo mês.',
+    },
+    club: {
+      title: 'Faça parte do Club',
+      copy: 'Além da curadoria mensal, quem é membro passa a ter condições exclusivas dentro do universo PetVila.',
+      link: 'Veja o que muda para membros',
+    },
+  },
+  cycles: [3, 6, 12] as const,
+  // {n} = meses do ciclo escolhido. Lido por leitores de tela quando o ciclo muda.
+  cycleCaption: '{n} meses de assinatura, {n} curadorias: uma PetVila por mês.',
+  cycleUnit: 'meses',
+  cycleGroupLabel: 'Duração do ciclo',
+  closing: 'Não é uma compra avulsa. É uma experiência que acompanha a rotina de vocês mês após mês.',
+};
+
 export const club = {
   headline: 'Existe um jeito PetVila de cuidar.',
   soon: 'Em breve',
   perMonth: 'produtos selecionados todos os meses',
+  cycle: 'Assinatura mensal em ciclos de 3, 6 ou 12 meses',
   plans: [
     {
       id: 'essential' as const,
@@ -73,6 +108,34 @@ export const club = {
       },
     },
   ],
+};
+
+/**
+ * PetVila Store + Club. A Store é outra aplicação, aberta a todos; aqui só o conceito.
+ * Nada de percentual, valores, frete grátis, cashback ou benefícios não definidos.
+ */
+export const store = {
+  headline: ['A loja é para todos.', 'O Club é para quem quer viver mais da PetVila.'],
+  intro:
+    'Em breve, a PetVila Store abre para todo mundo, assinante ou não. Quem faz parte do Club entra nela com vantagens de membro.',
+  items: [
+    {
+      id: 'store',
+      title: 'PetVila Store',
+      copy: 'Aberta para todos, com produtos escolhidos pelo mesmo olhar da curadoria.',
+    },
+    {
+      id: 'membro',
+      title: 'Preço de membro',
+      copy: 'Preços e condições especiais para membros em produtos selecionados. As condições podem variar conforme o produto e o plano.',
+    },
+    {
+      id: 'originals',
+      title: 'PetVila Originals',
+      copy: 'Os produtos próprios da PetVila, com vantagens para membros. No Vila Care, acesso antecipado e prioridade nos lançamentos.',
+    },
+  ],
+  note: 'A Store e as assinaturas ainda não estão abertas. Por enquanto, por aqui, dá para entrar nos Primeiros da Vila.',
 };
 
 export const manifesto = {

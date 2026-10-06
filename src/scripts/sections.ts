@@ -84,6 +84,32 @@ export function initCuradoria() {
   });
 }
 
+/* ---------- Como funciona: ciclo escolhido acende as caixas; passo em foco no scroll ---------- */
+export function initComoFunciona() {
+  const root = document.querySelector<HTMLElement>('[data-how]');
+  if (!root) return;
+  const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-cycle-btn]')];
+  const caption = root.querySelector<HTMLElement>('[data-cycle-caption]');
+
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      const n = b.dataset.cycleBtn!;
+      if (root.dataset.cycle === n) return;
+      root.dataset.cycle = n;
+      buttons.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+      if (caption) caption.textContent = caption.dataset.template!.replaceAll('{n}', n);
+      track('cycle_select', { cycle: Number(n) });
+    }),
+  );
+
+  const steps = [...root.querySelectorAll<HTMLElement>('[data-how-step]')];
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.target.classList.toggle('is-current', e.isIntersecting)),
+    { rootMargin: '-38% 0px -38% 0px' },
+  );
+  steps.forEach((s) => io.observe(s));
+}
+
 /* ---------- O Club: superfícies que reagem ao cursor / ao scroll no mobile ---------- */
 export function initClub() {
   const plans = [...document.querySelectorAll<HTMLElement>('.plan')];

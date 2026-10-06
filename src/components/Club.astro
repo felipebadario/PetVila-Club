@@ -1,15 +1,17 @@
 ---
 import CtaButton from './CtaButton.astro';
-import { club, cta } from '../content/copy';
+import BrandArt from './BrandArt.astro';
+import { club, cta, store } from '../content/copy';
 ---
 
 <section class="club" id="club" aria-labelledby="club-title">
-  <div class="wrap">
+  <div class="wrap club__wrap">
     <h2 id="club-title" class="club__title" data-reveal>{club.headline}</h2>
+    <div class="club__box" aria-hidden="true" data-reveal style="--reveal-i:1"><BrandArt art="caixa" /></div>
 
     <div class="club__plans">
       {club.plans.map((p, i) => (
-        <article class={`plan ${p.core ? 'plan--core' : ''}`} data-reveal style={`--reveal-i:${i + 1}`} data-plan={p.id} aria-labelledby={`plan-${p.id}`}>
+        <article id={`vila-${p.id}`} class={`plan ${p.core ? 'plan--core' : ''}`} data-reveal style={`--reveal-i:${i + 1}`} data-plan={p.id} aria-labelledby={`plan-${p.id}`}>
           <div class="plan__blob" aria-hidden="true"></div>
           <span class="plan__soon">
             <svg viewBox="0 0 100 100" aria-hidden="true">
@@ -22,6 +24,7 @@ import { club, cta } from '../content/copy';
           <p class="plan__tagline">{p.tagline}</p>
           <p class="plan__copy">{p.copy}</p>
           <p class="plan__count"><strong>{p.count}</strong> {club.perMonth}</p>
+          <p class="plan__cycle">{club.cycle}</p>
           <ul class="plan__items">
             {p.items.map((item) => <li>{item}</li>)}
           </ul>
@@ -38,12 +41,46 @@ import { club, cta } from '../content/copy';
         </article>
       ))}
     </div>
+
+    <div class="store section-dark" id="petvila-store" aria-labelledby="store-title" role="region" data-reveal>
+      <h3 id="store-title" class="store__title">
+        <span>{store.headline[0]}</span>
+        <span class="store__title-2">{store.headline[1]}</span>
+      </h3>
+      <p class="store__intro">{store.intro}</p>
+      <ul class="store__items" role="list">
+        {store.items.map((it) => (
+          <li class="store__item">
+            <h4 class="store__name">{it.title}</h4>
+            <p class="store__copy">{it.copy}</p>
+          </li>
+        ))}
+      </ul>
+      <p class="store__note">{store.note}</p>
+    </div>
   </div>
 </section>
 
 <style>
   .club {
     padding-block: var(--section);
+  }
+  .club__wrap {
+    position: relative;
+  }
+  /* Caixa PetVila em 3D, ao lado do título (só a partir do tablet). */
+  .club__box {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .club__box {
+      display: block;
+      position: absolute;
+      top: -1rem;
+      right: calc(var(--gutter) + 3vw);
+      width: clamp(9rem, 15vw, 13rem);
+      filter: drop-shadow(0 1rem 1.2rem color-mix(in srgb, var(--fucinho) 20%, transparent));
+    }
   }
   .club__title {
     font-size: var(--step-4);
@@ -169,6 +206,16 @@ import { club, cta } from '../content/copy';
     background: var(--chamego);
     color: var(--fucinho);
   }
+  /* Recorrência e ciclo: discreto, logo abaixo da quantidade mensal. */
+  .plan__cycle {
+    margin-top: -0.35rem;
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .plan--core .plan__cycle {
+    color: color-mix(in srgb, var(--chamego) 85%, var(--terra));
+  }
   .plan__items {
     list-style: none;
     margin: 0;
@@ -236,6 +283,92 @@ import { club, cta } from '../content/copy';
     rotate: 25deg;
   }
 
+  /* PetVila Store + Club */
+  .store {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    display: grid;
+    gap: 1.5rem;
+    margin-top: clamp(1.25rem, 3vw, 2rem);
+    padding: clamp(1.75rem, 5vw, 4rem);
+    border-radius: var(--radius);
+    background: var(--fucinho);
+    color: var(--chamego);
+  }
+  .store::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    width: clamp(14rem, 40vw, 30rem);
+    aspect-ratio: 1;
+    right: -8%;
+    top: -30%;
+    border-radius: 50%;
+    background: var(--terra);
+  }
+  .store__title {
+    font-size: var(--step-3);
+    max-width: 18ch;
+  }
+  .store__title span {
+    display: block;
+  }
+  .store__title-2 {
+    color: var(--patinha);
+  }
+  .store__intro {
+    font-size: var(--step-1);
+    max-width: 38ch;
+  }
+  .store__items {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1.5rem;
+  }
+  .store__item {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+  }
+  .store__name {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .store__name::before {
+    content: '';
+    display: inline-block;
+    width: 0.55em;
+    height: 0.55em;
+    margin-right: 0.5em;
+    border-radius: 50% 50% 50% 0;
+    background: var(--patinha);
+    transform: rotate(-45deg) translateY(-0.05em);
+  }
+  .store__copy {
+    font-size: var(--step-0);
+    max-width: 34ch;
+    color: color-mix(in srgb, var(--chamego) 88%, var(--fucinho));
+  }
+  .store__note {
+    font-size: var(--step--1);
+    font-weight: 600;
+    max-width: 52ch;
+    color: color-mix(in srgb, var(--chamego) 80%, var(--fucinho));
+  }
+
+  @media (min-width: 760px) {
+    .store__items {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
   @media (min-width: 960px) {
     .club__plans {
       grid-template-columns: 1fr 1.3fr;

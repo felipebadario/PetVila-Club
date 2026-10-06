@@ -1,14 +1,16 @@
 ---
 import CtaButton from './CtaButton.astro';
+import BrandArt from './BrandArt.astro';
 import { primeiros, cta } from '../content/copy';
 ---
 
 <section class="pdv" id="primeiros" aria-labelledby="pdv-title" data-parallax-scope>
   <div class="pdv__shapes" aria-hidden="true">
     <span class="pdv__s pdv__s--1" data-depth="24"></span>
-    <span class="pdv__s pdv__s--2" data-depth="-16"></span>
     <span class="pdv__s pdv__s--3" data-depth="10"></span>
   </div>
+  <!-- O cão da caixa espiando pela base da seção, em Chamego sobre Patinha como na embalagem. -->
+  <div class="pdv__dog" aria-hidden="true"><BrandArt art="cao" /></div>
   <div class="wrap pdv__in">
     <h2 id="pdv-title" class="pdv__title">
       <span data-reveal>{primeiros.headline[0]}</span>
@@ -82,12 +84,13 @@ import { primeiros, cta } from '../content/copy';
     top: -12vw;
     background: color-mix(in srgb, var(--chamego) 28%, var(--patinha));
   }
-  .pdv__s--2 {
-    width: 6rem;
-    aspect-ratio: 1;
-    right: 8vw;
-    bottom: 3rem;
-    background: var(--fucinho);
+  .pdv__dog {
+    position: absolute;
+    z-index: -1;
+    right: max(1.5vw, 0.75rem);
+    bottom: -1px;
+    width: clamp(6.5rem, 12vw, 11rem);
+    color: var(--chamego);
   }
   .pdv__s--3 {
     width: 12rem;
