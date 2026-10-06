@@ -1,12 +1,52 @@
 ---
 import SimplePage from '../components/SimplePage.astro';
+import { site } from '../config/site';
 ---
 
-<SimplePage title="Termos de Uso">
+<SimplePage title="Termos de Uso" description="Condições de uso da página da PetVila Club e do cadastro Primeiros da Vila.">
   <h1>Termos de Uso</h1>
-  <p class="pending">
-    <strong>Pendente de redação e revisão jurídica.</strong> Esta página existe para o link do rodapé já funcionar.
-    Os termos do clube (assinatura, cobrança, cancelamento, entrega) serão definidos antes do lançamento.
-  </p>
-  <p>Entrar para os Primeiros da Vila não é uma compra nem uma assinatura. É um cadastro gratuito para receber novidades sobre o lançamento.</p>
+  <p class="sp-meta">Última atualização: 6 de outubro de 2026.</p>
+
+  <h2>Quem somos</h2>
+  <p>Esta página é mantida por {site.legalName}, inscrita no CNPJ sob nº {site.cnpj}, responsável pela marca {site.name}. Contato: <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</p>
+
+  <h2>O que é esta página</h2>
+  <p>Esta é uma página institucional de apresentação da {site.name}, que está em pré-lançamento. Aqui você conhece a
+    proposta do clube e pode se cadastrar nos Primeiros da Vila para receber novidades.</p>
+  <p>Nesta página não há venda de produtos, contratação de planos nem pagamento.</p>
+
+  <h2>O cadastro nos Primeiros da Vila</h2>
+  <p>O cadastro nos Primeiros da Vila é gratuito e representa apenas uma manifestação de interesse em conhecer a {site.name}. Ele:</p>
+  <ul>
+    <li>não representa uma compra;</li>
+    <li>não representa a contratação de nenhum serviço ou plano;</li>
+    <li>não cria automaticamente uma assinatura;</li>
+    <li>não gera nenhuma cobrança.</li>
+  </ul>
+  <p>Eventuais condições comerciais, inclusive de estreia, serão apresentadas posteriormente pelos canais oficiais da {site.name}, e qualquer contratação dependerá da sua decisão, em ambiente e condições próprios.</p>
+  <p>Ao se cadastrar, você se compromete a informar dados verdadeiros e de sua titularidade. Você pode pedir a exclusão
+    do seu cadastro a qualquer momento pelo e-mail <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</p>
+
+  <h2>Informações exibidas</h2>
+  <p>As informações sobre o clube e seus planos apresentadas nesta página têm caráter informativo e podem ser ajustadas
+    até o lançamento. As imagens são ilustrativas.</p>
+
+  <h2>Propriedade intelectual</h2>
+  <p>A marca {site.name}, o logotipo, os textos e os demais elementos de identidade desta página pertencem à {site.legalName} ou são usados com autorização, e não podem ser reproduzidos sem permissão prévia.</p>
+
+  <h2>Links externos</h2>
+  <p>Esta página pode ter links para serviços de terceiros, como o Instagram. Esses serviços têm termos e políticas
+    próprios, que recomendamos consultar.</p>
+
+  <h2>Privacidade</h2>
+  <p>O tratamento dos dados informados no cadastro está descrito na nossa <a href="/privacidade">Política de Privacidade</a>.</p>
+
+  <h2>Alterações destes termos</h2>
+  <p>Podemos atualizar estes termos a qualquer momento. A data da última atualização fica sempre no topo desta página.</p>
+
+  <h2>Legislação aplicável</h2>
+  <p>Estes termos são regidos pelas leis da República Federativa do Brasil.</p>
+
+  <h2>Contato</h2>
+  <p>{site.legalName} · CNPJ {site.cnpj}<br /><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
 </SimplePage>

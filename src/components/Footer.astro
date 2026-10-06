@@ -11,12 +11,17 @@ const year = new Date().getFullYear();
       <p class="ftr__tag">{site.tagline}</p>
     </div>
     <nav class="ftr__links" aria-label="Rodapé">
-      {site.instagram && <a href={`https://instagram.com/${site.instagram}`} rel="noopener" target="_blank">Instagram</a>}
-      {site.contactEmail && <a href={`mailto:${site.contactEmail}`}>Contato</a>}
+      {site.contactEmail && <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>}
+      {site.instagram && (
+        <a href={`https://instagram.com/${site.instagram}`} rel="noopener" target="_blank" aria-label={`Instagram @${site.instagram}`}>@{site.instagram}</a>
+      )}
       <a href="/privacidade">Política de Privacidade</a>
       <a href="/termos">Termos de Uso</a>
     </nav>
-    <p class="ftr__copy">© {year} {site.name}{site.legalName && ` · ${site.legalName}`}. Todos os direitos reservados.</p>
+    <div class="ftr__base">
+      <p>© {year} {site.name}. Todos os direitos reservados.</p>
+      {site.legalName && <p>{site.legalName}{site.cnpj && ` · CNPJ ${site.cnpj}`}</p>}
+    </div>
   </div>
 </footer>
 
@@ -52,7 +57,11 @@ const year = new Date().getFullYear();
   .ftr__links a:focus-visible {
     background-size: 100% 2px;
   }
-  .ftr__copy {
+  .ftr__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.35rem 2rem;
     font-size: var(--step--1);
     opacity: 0.75;
     padding-top: 1.5rem;
@@ -63,7 +72,7 @@ const year = new Date().getFullYear();
       grid-template-columns: 1fr auto;
       align-items: end;
     }
-    .ftr__copy {
+    .ftr__base {
       grid-column: 1 / -1;
     }
   }
