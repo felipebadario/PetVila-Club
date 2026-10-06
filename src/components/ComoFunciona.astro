@@ -77,7 +77,8 @@ const caption = (n: number) => cf.cycleCaption.replaceAll('{n}', String(n));
 
 <style>
   .how {
-    padding-block: var(--section) 0;
+    /* A Curadoria já termina com o respiro de uma seção; somar outro aqui abria um vão duplo. */
+    padding-block: 0;
   }
   .how__head {
     display: grid;
