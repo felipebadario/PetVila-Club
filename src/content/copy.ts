@@ -45,9 +45,36 @@ export const club = {
   eyebrow: 'O Club',
   headline: 'Existe um jeito PetVila de cuidar.',
   soon: 'Em breve',
+  perMonth: 'produtos selecionados todos os meses',
   plans: [
-    { id: 'essential', name: 'Vila Essential', copy: 'O essencial para deixar a rotina ainda melhor.', core: false },
-    { id: 'care', name: 'Vila Care', copy: 'Uma experiência mais completa de cuidado, descoberta e diversão.', core: true },
+    {
+      id: 'essential',
+      name: 'Vila Essential',
+      tagline: 'O essencial, bem escolhido.',
+      copy: 'O essencial para fazer o mês do seu cão ainda melhor.',
+      count: 3,
+      items: ['1 brinquedo selecionado', '1 snack', '1 produto de cuidado ou higiene'],
+      core: false,
+    },
+    {
+      id: 'care',
+      name: 'Vila Care',
+      tagline: 'A experiência completa PetVila.',
+      copy: 'Mais cuidado. Mais descobertas. Mais PetVila.',
+      count: 5,
+      items: [
+        '1 brinquedo premium em destaque',
+        '1 brinquedo complementar',
+        '1 snack premium',
+        '1 snack de descoberta ou funcional',
+        '1 produto de cuidado ou higiene',
+      ],
+      core: true,
+      originals: {
+        title: 'PetVila Originals',
+        copy: 'Acesso antecipado e prioridade em lançamentos de produtos originais PetVila, incluindo edições e disponibilidades limitadas.',
+      },
+    },
   ],
 };
 

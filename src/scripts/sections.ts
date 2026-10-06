@@ -96,8 +96,8 @@ export function initClub() {
         p.style.setProperty('--my', `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
       });
       p.addEventListener('pointerleave', () => {
-        p.style.setProperty('--mx', '50%');
-        p.style.setProperty('--my', '50%');
+        p.style.removeProperty('--mx');
+        p.style.removeProperty('--my');
       });
     });
   } else {
