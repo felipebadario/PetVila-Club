@@ -134,9 +134,9 @@ As fotos entram pelo componente `<Image>` do Astro (gera WebP/AVIF e tamanhos re
 
 1. ~~Destino dos leads~~ **Decidido**: planilha Google + CRM próprio em `/crm` (ver seção 12). Sem a planilha configurada, o formulário em produção responde "indisponível" de propósito para não perder leads em silêncio.
 2. ~~Hospedagem~~ **Decidido**: Vercel.
-3. **Instagram oficial** (@) e **e-mail de contato**: links ficam ocultos até preencher `src/config/site.ts`.
-4. **Razão social e CNPJ** para rodapé e Política de Privacidade.
-5. **Política de Privacidade e Termos**: há um rascunho estrutural marcado como pendente de revisão jurídica. Faltam controlador, encarregado (DPO), operadores e prazo de retenção.
+3. ~~Instagram oficial e e-mail de contato~~ **Decidido**: @petvilaclub e contato@petvilaclub.com, em `src/config/site.ts`.
+4. ~~Razão social e CNPJ~~ **Decidido**: Pet Vila Club LTDA, CNPJ 69.194.320/0001-26 (rodapé, Política e Termos).
+5. **Política de Privacidade e Termos**: redigidos em 06/10/2026 com controlador, operadores e direitos do titular, refletindo o código atual. Falta revisão jurídica. Se GA4 ou Meta Pixel forem ativados, a Política precisa ser atualizada antes.
 6. **Banner de cookies / consentimento para GA4 e Meta Pixel**: os scripts só carregam com os IDs definidos e em produção; recomendo ativar junto com um banner.
 7. **Consentimento**: hoje é um único checkbox obrigatório (e-mail + WhatsApp + política). Se quiser WhatsApp opcional separado, é rápido mudar.
 8. **Microcopy dos 5 momentos e frase de apoio "Entrar não é comprar nem assinar nada"**: propostas minhas para revisão.

@@ -1,6 +1,5 @@
 /**
- * Dados institucionais. Itens marcados PENDENTE aguardam definição do negócio;
- * enquanto vazios, os links correspondentes não são exibidos.
+ * Dados institucionais. Campos vazios escondem os links correspondentes.
  */
 export const site = {
   name: 'PetVila Club',
@@ -9,12 +8,10 @@ export const site = {
     'Um clube criado para tornar a vida com seu cão mais prática, divertida e especial. Seja um dos Primeiros da Vila.',
   url: import.meta.env.PUBLIC_SITE_URL || 'https://petvilaclub.com.br',
   locale: 'pt_BR',
-  // PENDENTE: @ oficial do Instagram.
-  instagram: '',
-  // PENDENTE: e-mail de contato público.
-  contactEmail: '',
-  // PENDENTE: razão social e CNPJ para o rodapé e a Política de Privacidade.
-  legalName: '',
+  instagram: 'petvilaclub',
+  contactEmail: 'contato@petvilaclub.com',
+  legalName: 'Pet Vila Club LTDA',
+  cnpj: '69.194.320/0001-26',
   themeColor: '#E25D28',
 } as const;
 

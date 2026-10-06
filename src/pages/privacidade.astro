@@ -5,27 +5,101 @@ import { site } from '../config/site';
 
 <SimplePage title="Política de Privacidade" description="Como a PetVila Club trata os dados dos Primeiros da Vila.">
   <h1>Política de Privacidade</h1>
-  <p class="pending">
-    <strong>Rascunho estrutural, pendente de redação e revisão jurídica.</strong> Faltam: controlador (razão social e CNPJ),
-    encarregado de dados (DPO) e contato, ferramentas que recebem os dados (CRM/automação) e prazo de retenção.
-  </p>
+  <p class="sp-meta">Última atualização: 6 de outubro de 2026.</p>
+
+  <p>Esta política explica como a {site.name} trata os dados pessoais de quem visita esta página e de quem se cadastra
+    nos Primeiros da Vila, de acordo com a Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, LGPD).</p>
+
+  <h2>Quem é o controlador dos dados</h2>
+  <p>{site.legalName}, inscrita no CNPJ sob nº {site.cnpj}, responsável pela marca {site.name}.
+    Contato para assuntos de privacidade e dados pessoais: <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</p>
 
   <h2>Quais dados coletamos</h2>
-  <p>No cadastro Primeiros da Vila: seu nome, e-mail, WhatsApp, cidade e estado; nome, porte e idade aproximada do seu cão;
-    e, se você quiser, os temas que mais fariam diferença na sua rotina. Também registramos a origem da visita (parâmetros UTM),
-    a data e a hora do cadastro e a versão do consentimento aceito.</p>
+  <p>Ao se cadastrar nos Primeiros da Vila, você nos informa:</p>
+  <ul>
+    <li>seu nome (como prefere ser chamado), e-mail, WhatsApp com DDD, cidade e estado;</li>
+    <li>o nome do seu cão, o porte e a idade aproximada ou, se preferir, a data de nascimento dele;</li>
+    <li>opcionalmente, os temas que mais fariam diferença na sua rotina com ele.</li>
+  </ul>
+  <p>Junto com o cadastro, registramos automaticamente:</p>
+  <ul>
+    <li>a data e a hora do envio e o texto e a versão do consentimento que você aceitou;</li>
+    <li>a origem da visita: o botão da página usado para abrir o cadastro, os parâmetros de campanha presentes no link
+      (UTM), o domínio do site que trouxe você até aqui, quando houver, e o endereço da página de entrada.</li>
+  </ul>
+  <p>Não pedimos CPF, endereço, dados de pagamento nem dados pessoais sensíveis.</p>
+  <p>Como em qualquer site, ao acessar esta página o seu navegador também transmite dados técnicos, como endereço IP,
+    tipo de navegador e páginas acessadas, aos serviços que hospedam a página e as imagens (veja abaixo).</p>
 
-  <h2>Para que usamos</h2>
-  <p>Para avisar sobre o lançamento da {site.name}, enviar novidades e condições de estreia, e entender melhor a rotina
-    de quem vive com um cão para planejar o clube.</p>
+  <h2>Para que usamos os dados</h2>
+  <ul>
+    <li>Avisar você sobre o lançamento da {site.name} e enviar novidades e condições de estreia por e-mail e WhatsApp,
+      conforme o consentimento dado no cadastro.</li>
+    <li>Conhecer melhor a rotina de quem vive com um cão (porte, idade, cidade e interesses) para planejar o clube.</li>
+    <li>Entender quais canais e campanhas trazem cadastros, a partir dos dados de origem da visita.</li>
+    <li>Manter a página funcionando com segurança e evitar cadastros automáticos (robôs).</li>
+  </ul>
+  <p>Não vendemos seus dados e não os compartilhamos com terceiros para que eles façam publicidade.</p>
 
   <h2>Base legal</h2>
-  <p>Consentimento (art. 7º, I, da LGPD), que você pode revogar a qualquer momento.</p>
+  <p>Os dados do cadastro são tratados com base no seu consentimento (art. 7º, I, da LGPD), que você pode revogar a
+    qualquer momento. Os dados técnicos de acesso são tratados para o funcionamento e a segurança da página, com base no
+    legítimo interesse (art. 7º, IX, da LGPD).</p>
+
+  <h2>Onde os dados ficam armazenados</h2>
+  <p>Os cadastros são enviados por conexão criptografada (HTTPS) e guardados em uma planilha Google da {site.name},
+    acessada pela nossa equipe por meio de uma área interna protegida por senha. Lá também registramos anotações
+    internas sobre o atendimento, como o status do contato.</p>
+  <p>Mantemos os dados enquanto forem necessários para as finalidades acima, ou até você pedir a exclusão ou revogar o
+    consentimento, o que acontecer primeiro.</p>
+
+  <h2>Fornecedores que nos ajudam a operar a página</h2>
+  <p>Para a página funcionar, contamos com fornecedores que tratam dados em nosso nome (operadores), apenas para
+    prestar o serviço contratado:</p>
+  <ul>
+    <li><strong>Vercel</strong>: hospedagem da página e processamento do envio do cadastro;</li>
+    <li><strong>Google</strong>: armazenamento dos cadastros em planilha (Google Planilhas e Apps Script);</li>
+    <li><strong>Unsplash</strong>: entrega de algumas das imagens exibidas na página, que recebe os dados técnicos de
+      acesso do seu navegador ao carregá-las;</li>
+    <li>provedores de e-mail e WhatsApp, quando entramos em contato com você por esses canais.</li>
+  </ul>
+  <p>Alguns desses fornecedores podem processar dados em servidores fora do Brasil. Nesses casos, a transferência
+    ocorre para viabilizar o serviço e com as garantias previstas na LGPD.</p>
+  <p>Também podemos compartilhar dados quando exigido por lei ou por ordem de autoridade competente.</p>
+
+  <h2>Cookies e tecnologias semelhantes</h2>
+  <p>Esta página não usa cookies de publicidade nem ferramentas de analytics. Para registrar a origem da visita,
+    guardamos essas informações (parâmetros de campanha, site de origem e página de entrada) no armazenamento de sessão
+    do seu navegador, que é apagado quando você fecha a aba. Se no futuro passarmos a usar ferramentas de analytics ou
+    publicidade, esta política será atualizada antes disso e, quando necessário, pediremos o seu consentimento.</p>
 
   <h2>Seus direitos</h2>
-  <p>Você pode pedir acesso, correção, portabilidade ou exclusão dos seus dados e revogar o consentimento.
-    {site.contactEmail ? <>Escreva para <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</> : <span class="pending-inline">[PENDENTE: canal de contato]</span>}</p>
+  <p>A LGPD garante a você, a qualquer momento:</p>
+  <ul>
+    <li>confirmar se tratamos seus dados e acessá-los;</li>
+    <li>corrigir dados incompletos, inexatos ou desatualizados;</li>
+    <li>pedir a anonimização, o bloqueio ou a eliminação de dados desnecessários ou tratados em desconformidade com a lei;</li>
+    <li>pedir a portabilidade dos dados;</li>
+    <li>pedir a eliminação dos dados tratados com base no seu consentimento;</li>
+    <li>saber com quem compartilhamos seus dados;</li>
+    <li>ser informado sobre a possibilidade de não consentir e as consequências disso;</li>
+    <li>revogar o consentimento;</li>
+    <li>apresentar reclamação à Autoridade Nacional de Proteção de Dados (ANPD).</li>
+  </ul>
 
-  <h2>Compartilhamento</h2>
-  <p><span class="pending-inline">[PENDENTE: listar operadores, como hospedagem e ferramenta de e-mail/CRM.]</span></p>
+  <h2>Como pedir acesso, correção ou exclusão</h2>
+  <p>Escreva para <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a> a partir do e-mail que você usou no cadastro, dizendo o que deseja. Se for necessário, podemos
+    pedir alguma confirmação para garantir que o pedido é seu. Respondemos em até 15 dias.</p>
+  <p>Se você só não quiser mais receber nossas mensagens, basta responder a qualquer uma delas pedindo para sair, ou
+    escrever para o mesmo e-mail.</p>
+
+  <h2>Crianças e adolescentes</h2>
+  <p>O cadastro dos Primeiros da Vila é destinado a maiores de 18 anos.</p>
+
+  <h2>Alterações desta política</h2>
+  <p>Podemos atualizar esta política para refletir mudanças na página ou na legislação. A data da última atualização
+    fica sempre no topo.</p>
+
+  <h2>Contato</h2>
+  <p>{site.legalName} · CNPJ {site.cnpj}<br /><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
 </SimplePage>
