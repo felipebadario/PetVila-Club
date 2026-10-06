@@ -5,7 +5,7 @@ export const site = {
   name: 'PetVila Club',
   tagline: 'Cuidado que faz parte da rotina.',
   description:
-    'Um clube criado para tornar a vida com seu cão mais prática, divertida e especial. Seja um dos Primeiros da Vila.',
+    'PetVila Club é um clube de assinatura mensal para cães: todo mês, uma nova curadoria para a rotina de vocês. Seja um dos Primeiros da Vila.',
   url: import.meta.env.PUBLIC_SITE_URL || 'https://petvilaclub.com.br',
   locale: 'pt_BR',
   instagram: 'petvilaclub',
