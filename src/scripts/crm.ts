@@ -15,6 +15,11 @@ const fmtDate = (iso: string) => {
   return isNaN(+d) ? iso : d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
 };
 
+// Plano de interesse. Leads anteriores ao campo (vazio, null, undefined) = "Não informado".
+const PLAN_LABELS: Record<string, string> = { essential: 'Vila Essential', care: 'Vila Care', undecided: 'Indeciso' };
+const planOf = (l: { preferredPlan?: unknown }) => (typeof l.preferredPlan === 'string' && PLAN_LABELS[l.preferredPlan] ? l.preferredPlan : '');
+const planLabel = (code: string) => PLAN_LABELS[code] || 'Não informado';
+
 const fmtPhone = (d: string) =>
   d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : d.length === 10 ? `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}` : d;
 
@@ -94,6 +99,7 @@ export function initCrm() {
           <td><a href="mailto:${esc(l.email)}">${esc(l.email)}</a>${wa ? `<small><a href="${wa}" target="_blank" rel="noopener">${esc(fmtPhone(l.whatsapp))}</a></small>` : ''}</td>
           <td>${esc(l.cidade)}<small>${esc(l.uf)}</small></td>
           <td><div class="chips">${l.interesses.map((i) => `<span>${esc(labels.interesse[i] || i)}</span>`).join('')}</div></td>
+          <td><span class="plan-tag" data-plan="${planOf(l)}">${esc(planLabel(planOf(l)))}</span></td>
           <td>${esc(l.utm_source || 'direto')}<small>${esc([l.utm_campaign, l.cta_origem].filter(Boolean).join(' · '))}</small></td>
           <td><select data-status="${esc(status)}" aria-label="Status de ${esc(l.nome)}">${statuses
             .map((s) => `<option value="${s}"${s === status ? ' selected' : ''}>${s}</option>`)
@@ -144,7 +150,7 @@ export function initCrm() {
   document.querySelector('[data-export]')?.addEventListener('click', () => {
     const cols: (keyof CrmLead)[] = [
       'criado_em', 'status', 'nome', 'email', 'whatsapp', 'nome_cao', 'porte', 'idade_faixa', 'nascimento',
-      'cidade', 'uf', 'interesses', 'cta_origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
+      'cidade', 'uf', 'interesses', 'preferredPlan', 'cta_origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
       'utm_term', 'referrer', 'nota', 'id',
     ];
     const cell = (v: unknown) => {
