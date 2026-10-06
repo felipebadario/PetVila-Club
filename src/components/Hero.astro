@@ -31,9 +31,6 @@ const words = hero.headline.split(' ');
     </div>
   </div>
 
-  <a href="#rotina" class="hero__scroll" aria-label="Rolar para a próxima seção">
-    <span aria-hidden="true"></span>
-  </a>
 </section>
 
 <style>
@@ -162,32 +159,6 @@ const words = hero.headline.split(' ');
     color: var(--ink-soft);
     margin-bottom: 2.25rem;
   }
-  .hero__scroll {
-    position: absolute;
-    left: 50%;
-    bottom: 1.25rem;
-    width: 2.75rem;
-    height: 2.75rem;
-    translate: -50% 0;
-    display: none;
-    place-items: center;
-  }
-  .hero__scroll span {
-    width: 2px;
-    height: 1.8rem;
-    background: var(--fucinho);
-    border-radius: 2px;
-    transform-origin: top;
-  }
-  .motion .hero__scroll span {
-    animation: tick 2.2s var(--ease-out) infinite;
-  }
-  @keyframes tick {
-    0% { transform: scaleY(0); }
-    50% { transform: scaleY(1); transform-origin: top; }
-    51% { transform-origin: bottom; }
-    100% { transform: scaleY(0); transform-origin: bottom; }
-  }
 
   /* Mobile: arte no topo, texto embaixo, sem sobreposição com a copy. */
   @media (max-width: 759px) {
@@ -205,8 +176,5 @@ const words = hero.headline.split(' ');
     .hero__title { font-size: clamp(2.6rem, 12vw, 4.4rem); margin-bottom: 1rem; }
     .hero__support { font-size: 1.05rem; margin-bottom: 1.5rem; }
     .hero :global(.ph__tag) { font-size: 0.55rem; margin: 10%; }
-  }
-  @media (min-width: 760px) {
-    .hero__scroll { display: grid; }
   }
 </style>

@@ -13,7 +13,6 @@ export const hero = {
 export type MomentId = 'comer' | 'brincar' | 'passear' | 'cuidar' | 'junto';
 
 export const rotina = {
-  eyebrow: 'A rotina',
   headline: 'A rotina é onde o cuidado acontece.',
   intro: 'A PetVila não começa quando uma caixa chega. Ela está nos pequenos momentos entre você e seu cão.',
   // Microcopy de cada momento: proposta inicial para revisão.
@@ -27,7 +26,6 @@ export const rotina = {
 };
 
 export const curadoria = {
-  eyebrow: 'Curadoria',
   headline: ['Menos coisas.', 'Mais coisas certas.'],
   intro:
     'A gente não quer só mandar produtos para a sua casa. Quer escolher o que faz sentido para a rotina de vocês.',
@@ -42,7 +40,6 @@ export const curadoria = {
 };
 
 export const club = {
-  eyebrow: 'O Club',
   headline: 'Existe um jeito PetVila de cuidar.',
   soon: 'Em breve',
   perMonth: 'produtos selecionados todos os meses',

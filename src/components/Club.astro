@@ -5,8 +5,7 @@ import { club, cta } from '../content/copy';
 
 <section class="club" id="club" aria-labelledby="club-title">
   <div class="wrap">
-    <p class="eyebrow" data-reveal>{club.eyebrow}</p>
-    <h2 id="club-title" class="club__title" data-reveal style="--reveal-i:1">{club.headline}</h2>
+    <h2 id="club-title" class="club__title" data-reveal>{club.headline}</h2>
 
     <div class="club__plans">
       {club.plans.map((p, i) => (
@@ -49,7 +48,7 @@ import { club, cta } from '../content/copy';
   .club__title {
     font-size: var(--step-4);
     max-width: 13ch;
-    margin: 1rem 0 clamp(2.5rem, 6vw, 4.5rem);
+    margin: 0 0 clamp(2.5rem, 6vw, 4.5rem);
   }
   .club__plans {
     display: grid;

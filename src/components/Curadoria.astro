@@ -8,20 +8,18 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
 <section class="cur" id="curadoria" aria-labelledby="cur-title" data-curadoria>
   <div class="wrap">
     <div class="cur__head">
-      <p class="eyebrow" data-reveal>{curadoria.eyebrow}</p>
       <h2 id="cur-title" class="cur__title">
-        <span class="cur__line" data-reveal style="--reveal-i:1">{curadoria.headline[0]}</span>
-        <span class="cur__line" data-reveal style="--reveal-i:2">
+        <span class="cur__line" data-reveal>{curadoria.headline[0]}</span>
+        <span class="cur__line" data-reveal style="--reveal-i:1">
           Mais coisas <span class="cur__mark">certas.<svg viewBox="0 0 300 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 16 C 60 6, 120 4, 180 10 S 270 20, 296 8" fill="none" stroke="var(--patinha)" stroke-width="7" stroke-linecap="round" pathLength="1" /></svg></span>
         </span>
       </h2>
-      <p class="cur__intro" data-reveal style="--reveal-i:3">{curadoria.intro}</p>
+      <p class="cur__intro" data-reveal style="--reveal-i:2">{curadoria.intro}</p>
     </div>
 
     <ul class="cur__list" role="list">
       {curadoria.categories.map((c, i) => (
         <li class="cur__item" data-reveal style={`--reveal-i:${i}`} data-cat={i}>
-          <span class="cur__num" aria-hidden="true">0{i + 1}</span>
           <h3 class="cur__name">{c.label}</h3>
           <p class="cur__desc">{c.copy}</p>
           <Photo photo={photos.curadoria[c.id as keyof typeof photos.curadoria]} shape="circle" ratio="1:1" sizes="5rem" decorative class="cur__thumb" />
@@ -86,16 +84,14 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
     list-style: none;
     margin: 0;
     padding: 0;
-    border-top: 1.5px solid var(--fucinho);
   }
   .cur__item {
     position: relative;
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
     column-gap: 1rem;
     align-items: baseline;
     padding: 1.4rem 0.25rem;
-    border-bottom: 1.5px solid var(--fucinho);
     isolation: isolate;
   }
   .cur__item::before {
@@ -108,17 +104,12 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
     transform-origin: bottom;
     transition: transform 500ms var(--ease-out);
   }
-  .cur__num {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-  }
   .cur__name {
     font-size: var(--step-3);
     transition: transform 600ms var(--ease-out);
   }
   .cur__desc {
-    grid-column: 2;
+    grid-column: 1;
     margin-top: 0.4rem;
     font-size: var(--step-1);
     color: var(--ink-soft);
@@ -135,10 +126,10 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
     display: none;
   }
   .cur__item {
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 1fr auto;
   }
   .cur__item :global(.cur__thumb) {
-    grid-column: 3;
+    grid-column: 2;
     grid-row: 1 / span 2;
     align-self: center;
     width: 4.5rem;
@@ -150,20 +141,17 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
       grid-template-columns: 1.4fr 1fr;
       align-items: end;
     }
-    .cur__head .eyebrow {
-      grid-column: 1 / -1;
-    }
     .cur__item {
-      grid-template-columns: 4rem 1fr 1fr auto;
+      grid-template-columns: 1fr 1fr auto;
       column-gap: 1.5rem;
       padding-block: 1.8rem;
     }
     .cur__item :global(.cur__thumb) {
-      grid-column: 4;
+      grid-column: 3;
       grid-row: 1;
     }
     .cur__desc {
-      grid-column: 3;
+      grid-column: 2;
       margin-top: 0;
       text-align: right;
     }
@@ -183,7 +171,7 @@ const tones = ['patinha', 'terra', 'fucinho', 'patinha'] as const;
       display: none;
     }
     .cur__item {
-      grid-template-columns: 4rem 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
     }
     .cur__float {
       display: block;
