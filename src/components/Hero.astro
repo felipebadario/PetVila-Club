@@ -1,6 +1,7 @@
 ---
 import CtaButton from './CtaButton.astro';
 import Photo from './Photo.astro';
+import BrandArt from './BrandArt.astro';
 import { photos } from '../content/photos';
 import { hero } from '../content/copy';
 const words = hero.headline.split(' ');
@@ -10,12 +11,12 @@ const words = hero.headline.split(' ');
   <!-- Elementos gráficos provisórios: substituir pelas ilustrações oficiais do brand book. -->
   <div class="hero__art">
     <div aria-hidden="true" class="hero__shape hero__shape--sun" data-depth="-18" data-scroll-speed="0.25"></div>
-    <div aria-hidden="true" class="hero__shape hero__shape--dot" data-depth="30" data-scroll-speed="-0.15"></div>
+    <div aria-hidden="true" class="hero__shape hero__shape--dot" data-depth="30" data-scroll-speed="0.2"></div>
     <div aria-hidden="true" class="hero__shape hero__shape--ring" data-depth="12" data-scroll-speed="0.4"></div>
     <div class="hero__photo" data-depth="-8" data-scroll-speed="0.12">
       <Photo photo={photos.hero} shape="arch" ratio="3:4" sizes="(min-width: 760px) 24rem, 40vw" priority class="hero__ph" />
     </div>
-    <div aria-hidden="true" class="hero__ill" data-depth="22" data-scroll-speed="-0.3"></div>
+    <div aria-hidden="true" class="hero__ill" data-depth="22" data-scroll-speed="-0.3"><BrandArt art="caixa" /></div>
     <svg aria-hidden="true" class="hero__squiggle" data-depth="-26" viewBox="0 0 220 60"><path d="M4 40 C 30 4, 52 4, 70 32 S 110 58, 130 28 S 178 2, 216 30" fill="none" stroke="var(--fucinho)" stroke-width="4" stroke-linecap="round" pathLength="1" /></svg>
   </div>
 
@@ -25,7 +26,6 @@ const words = hero.headline.split(' ');
         <span class="hero__word" aria-hidden="true"><span style={`--i:${i}`}>{w}</span></span>
       ))}
     </h1>
-    <p class="hero__support hero__in" style="--i:4">{hero.support}</p>
     <div class="hero__cta hero__in" style="--i:6">
       <CtaButton origin="hero" />
     </div>
@@ -70,8 +70,9 @@ const words = hero.headline.split(' ');
     aspect-ratio: 1;
     border-radius: 50%;
     background: var(--fucinho);
-    left: 8vw;
-    top: 18vh;
+    /* Longe do título: canto inferior direito, junto da foto. Sobe no scroll, nunca desce sobre o texto. */
+    right: 5vw;
+    top: 70vh;
   }
   .hero__shape--ring {
     width: 9rem;
@@ -88,16 +89,12 @@ const words = hero.headline.split(' ');
     top: 17vh;
     rotate: 4deg;
   }
-  /* Forma provisória: substituir pela ilustração oficial da marca. */
+  /* Caixa PetVila em 3D, vetorizada do print da embalagem. */
   .hero__ill {
-    background: var(--patinha);
-    border-radius: 58% 42% 52% 48% / 46% 56% 44% 54%;
-    border: 3px solid var(--fucinho);
-    width: min(22vw, 11rem);
-    aspect-ratio: 1;
-    right: 34vw;
-    top: 46vh;
-    rotate: -10deg;
+    width: min(19vw, 16rem);
+    right: 31vw;
+    top: 44vh;
+    filter: drop-shadow(0 1.2rem 1.4rem color-mix(in srgb, var(--fucinho) 22%, transparent));
   }
   .hero :global(.hero__ph) {
     width: 100%;
@@ -124,7 +121,7 @@ const words = hero.headline.split(' ');
     font-size: clamp(3.2rem, 1.4rem + 6.2vw, 8.25rem);
     max-width: 11ch;
     line-height: 0.92;
-    margin-bottom: 1.75rem;
+    margin-bottom: 2.25rem;
   }
   .hero__word {
     display: inline-block;
@@ -153,28 +150,23 @@ const words = hero.headline.split(' ');
   @keyframes fadeUp {
     to { opacity: 1; transform: none; }
   }
-  .hero__support {
-    font-size: var(--step-1);
-    max-width: 30ch;
-    color: var(--ink-soft);
-    margin-bottom: 2.25rem;
-  }
 
   /* Mobile: arte no topo, texto embaixo, sem sobreposição com a copy. */
   @media (max-width: 759px) {
     .hero {
       align-items: end;
-      padding-top: 36svh;
+      /* Sem o texto de apoio, o Hero não precisa ocupar a tela toda: o título vem logo abaixo da arte. */
+      min-height: auto;
+      padding-top: 50svh;
       padding-bottom: 1.5rem;
     }
     .hero__shape--sun { width: 64vw; right: -20vw; top: 13svh; }
     .hero__photo { width: 36vw; right: 12vw; top: 15svh; }
-    .hero__ill { width: 22vw; right: auto; left: 12vw; top: 29svh; }
+    .hero__ill { width: 27vw; right: auto; left: 11vw; top: 22svh; }
     .hero__shape--ring { width: 4.5rem; right: auto; left: 34vw; top: 14svh; }
-    .hero__shape--dot { width: 2.2rem; left: 6vw; top: 17svh; }
+    .hero__shape--dot { width: 2.2rem; right: auto; left: 6vw; top: 17svh; }
     .hero__squiggle { width: 6.5rem; left: 6vw; top: 41svh; }
     .hero__title { font-size: clamp(2.6rem, 12vw, 4.4rem); margin-bottom: 1rem; }
-    .hero__support { font-size: 1.05rem; margin-bottom: 1.5rem; }
     .hero :global(.ph__tag) { font-size: 0.55rem; margin: 10%; }
   }
 </style>

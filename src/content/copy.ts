@@ -7,8 +7,6 @@ export const cta = {
 
 export const hero = {
   headline: 'Cuidado que faz parte da rotina.',
-  support:
-    'Um clube de assinatura mensal para cães. Todo mês, uma nova curadoria para deixar a rotina de vocês mais prática, interessante e cheia de descobertas.',
 };
 
 export type MomentId = 'comer' | 'brincar' | 'passear' | 'cuidar' | 'junto';
