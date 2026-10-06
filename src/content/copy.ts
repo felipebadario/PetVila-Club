@@ -117,8 +117,16 @@ export const form = {
   // Etapa exibida só quando o cadastro não foi aberto pelo botão de um dos planos.
   // Nome e frase de Essential e Care vêm dos próprios cards da seção O Club.
   plans: [
-    ...club.plans.map((p) => ({ value: p.id, label: p.name, copy: p.tagline })),
-    { value: 'undecided', label: 'Ainda não sei', copy: 'Quero conhecer melhor antes de escolher.' },
+    // Detalhes iguais aos dos cards: quem abre o cadastro pelo topo pode não ter visto a seção.
+    ...club.plans.map((p) => ({
+      value: p.id,
+      label: p.name,
+      copy: p.tagline,
+      count: p.count as number | undefined,
+      items: p.items as string[],
+      originals: 'originals' in p ? p.originals : undefined,
+    })),
+    { value: 'undecided', label: 'Ainda não sei', copy: 'Quero conhecer melhor antes de escolher.', count: undefined, items: [] as string[], originals: undefined },
   ],
   interests: [
     { value: 'alimentacao', label: 'Alimentação' },
