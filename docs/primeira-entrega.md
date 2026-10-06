@@ -144,7 +144,7 @@ As fotos entram pelo componente `<Image>` do Astro (gera WebP/AVIF e tamanhos re
 
 ## 10. Dados do cadastro
 
-Cada lead é gravado com: `id`, `criado_em` (UTC, carimbo do servidor), `nome`, `email`, `whatsapp` (só dígitos), `nome_cao`, `porte`, `idade_faixa`, `nascimento`, `cidade`, `uf`, `interesses[]`, `consentimento`, `consentimento_versao`, `consentimento_texto`, `cta_origem` (qual botão gerou o lead), `utm_source/medium/campaign/content/term`, `referrer`, `landing_page`. Há honeypot anti-spam.
+Cada lead é gravado com: `id`, `criado_em` (UTC, carimbo do servidor), `nome`, `email`, `whatsapp` (só dígitos), `nome_cao`, `porte`, `idade_faixa`, `nascimento`, `cidade`, `uf`, `interesses[]`, `preferredPlan` (plano de interesse: `essential`, `care` ou `undecided`; vem do botão do card do plano ou, nos demais botões, da pergunta no formulário; vazio nos leads anteriores ao campo), `consentimento`, `consentimento_versao`, `consentimento_texto`, `cta_origem` (qual botão gerou o lead), `utm_source/medium/campaign/content/term`, `referrer`, `landing_page`. Há honeypot anti-spam.
 
 Eventos de tracking já emitidos (para `dataLayer`, GA4 e Meta quando ativos): `cta_click`, `lead_form_open`, `lead_step_complete`, `lead_form_close`, `lead_submit_error`, `generate_lead` (vira `Lead` no Meta), `rotina_moment`, `section_view`, `instagram_click`.
 

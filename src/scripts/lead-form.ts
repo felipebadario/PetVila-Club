@@ -1,5 +1,5 @@
 /** Fluxo do cadastro "Primeiros da Vila". */
-import { validateLead, type Lead } from '../lib/leads/schema';
+import { validateLead, isPlan, type Lead, type PreferredPlan } from '../lib/leads/schema';
 import { submitLead } from '../lib/leads/client';
 import { track, readAttribution } from '../lib/tracking';
 import { form as copy } from '../content/copy';
@@ -32,6 +32,11 @@ export function initLeadForm() {
 
   let step = 0;
   let origin = '';
+  // Plano vindo do botão de um card (Essential/Care). Com ele, a etapa do plano é pulada.
+  // Fica valendo na visita: reabrir por um CTA genérico não volta a perguntar.
+  let presetPlan: PreferredPlan | '' = '';
+  const planStep = steps.findIndex((el) => el.hasAttribute('data-plan-step'));
+  const active = () => steps.map((_, i) => i).filter((i) => !(i === planStep && presetPlan));
   let opener: HTMLElement | null = null;
   let done = false;
 
@@ -50,6 +55,7 @@ export function initLeadForm() {
       cidade: fd.get('cidade'),
       uf: fd.get('uf'),
       interesses: fd.getAll('interesses'),
+      preferredPlan: presetPlan || fd.get('preferredPlan') || '',
       consentimento: fd.get('consentimento') === 'on',
     };
   };
@@ -86,10 +92,12 @@ export function initLeadForm() {
     void el.offsetWidth;
     el.classList.add(dir === 1 ? 'is-entering' : 'is-entering-back');
     personalize();
-    back.hidden = step === 0;
-    nextLabel.textContent = step === steps.length - 1 ? 'Entrar para a Vila' : 'Continuar';
-    progressLabel.textContent = `Passo ${step + 1} de ${steps.length}`;
+    const order = active();
+    back.hidden = step === order[0];
+    nextLabel.textContent = step === order[order.length - 1] ? 'Entrar para a Vila' : 'Continuar';
+    progressLabel.textContent = `Passo ${order.indexOf(step) + 1} de ${order.length}`;
     dots.forEach((d, j) => {
+      d.hidden = !order.includes(j);
       d.classList.toggle('is-done', j < step);
       d.classList.toggle('is-current', j === step);
     });
@@ -99,9 +107,10 @@ export function initLeadForm() {
     requestAnimationFrame(() => target?.focus({ preventScroll: true }));
   };
 
-  const open = (from: string, trigger: HTMLElement | null) => {
+  const open = (from: string, trigger: HTMLElement | null, plan?: PreferredPlan) => {
     origin = from;
     opener = trigger;
+    if (plan) presetPlan = plan;
     if (done) {
       // Já cadastrado nesta visita: reabre a tela de boas-vindas.
       formEl.hidden = true;
@@ -111,7 +120,11 @@ export function initLeadForm() {
     document.documentElement.style.overflow = 'hidden';
     requestAnimationFrame(() => dialog.classList.add('is-open'));
     track('lead_form_open', { cta_origin: from });
-    if (!done) go(step, 1);
+    if (!done) {
+      // Se parou na etapa do plano e agora veio por um card, segue para a próxima.
+      const order = active();
+      go(order.includes(step) ? step : order.find((i) => i > step) ?? order[order.length - 1], 1);
+    }
   };
 
   const close = () => {
@@ -123,7 +136,7 @@ export function initLeadForm() {
     };
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) finish();
     else setTimeout(finish, 380);
-    if (!done) track('lead_form_close', { step: step + 1 });
+    if (!done) track('lead_form_close', { step: active().indexOf(step) + 1 });
   };
 
   document.addEventListener('click', (e) => {
@@ -131,7 +144,9 @@ export function initLeadForm() {
     if (t) {
       e.preventDefault();
       track('cta_click', { cta_origin: t.dataset.openLead });
-      open(t.dataset.openLead || 'unknown', t);
+      // Só os botões dos cards declaram o plano (data-lead-plan); nunca inferir pelo texto.
+      const plan = t.dataset.leadPlan;
+      open(t.dataset.openLead || 'unknown', t, isPlan(plan) && plan !== 'undecided' ? plan : undefined);
     }
   });
   dialog.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
@@ -144,7 +159,11 @@ export function initLeadForm() {
     if (e.target === dialog) close();
   });
 
-  back.addEventListener('click', () => step > 0 && go(step - 1, -1));
+  back.addEventListener('click', () => {
+    const order = active();
+    const i = order.indexOf(step);
+    if (i > 0) go(order[i - 1], -1);
+  });
 
   formEl.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -153,8 +172,11 @@ export function initLeadForm() {
     showErrors(errors as Record<string, string>, fields);
     if (!ok) return;
 
-    track('lead_step_complete', { step: step + 1 });
-    if (step < steps.length - 1) return go(step + 1, 1);
+    const order = active();
+    track('lead_step_complete', { step: order.indexOf(step) + 1 });
+    if (step !== order[order.length - 1]) return go(order[order.indexOf(step) + 1], 1);
+    // Garantia: sem plano (nem do card, nem escolhido), volta para a pergunta.
+    if (!data.preferredPlan && planStep >= 0) return go(planStep, -1);
 
     const attribution = readAttribution();
     const payload = {
@@ -186,6 +208,7 @@ export function initLeadForm() {
       cta_origin: origin,
       dog_size: data.porte,
       interests: data.interesses.join(','),
+      preferred_plan: data.preferredPlan,
       utm_source: payload.utm_source,
       utm_campaign: payload.utm_campaign,
     });

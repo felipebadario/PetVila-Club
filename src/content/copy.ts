@@ -45,7 +45,7 @@ export const club = {
   perMonth: 'produtos selecionados todos os meses',
   plans: [
     {
-      id: 'essential',
+      id: 'essential' as const,
       name: 'Vila Essential',
       tagline: 'O essencial, bem escolhido.',
       copy: 'O essencial para fazer o mês do seu cão ainda melhor.',
@@ -54,7 +54,7 @@ export const club = {
       core: false,
     },
     {
-      id: 'care',
+      id: 'care' as const,
       name: 'Vila Care',
       tagline: 'A experiência completa PetVila.',
       copy: 'Mais cuidado. Mais descobertas. Mais PetVila.',
@@ -94,6 +94,10 @@ export const form = {
     dog: { title: 'E quem é o protagonista dessa história?', label: 'Nome do seu cão' },
     about: { title: 'Conta um pouquinho sobre {dog}.', sizeLabel: 'Porte', ageLabel: 'Idade aproximada' },
     contact: { title: 'Por onde a gente te avisa?' },
+    plan: {
+      title: 'Qual plano mais combina com você e seu cão?',
+      hint: 'Não se preocupe com valores agora. Queremos entender qual experiência faz mais sentido para a sua rotina.',
+    },
     interests: {
       title: 'O que mais faria diferença na rotina com {dog}?',
       hint: 'Opcional. Pode marcar mais de um.',
@@ -109,6 +113,12 @@ export const form = {
     { value: 'jovem', label: '1 a 3 anos' },
     { value: 'adulto', label: '4 a 7 anos' },
     { value: 'senior', label: '8 anos ou mais' },
+  ],
+  // Etapa exibida só quando o cadastro não foi aberto pelo botão de um dos planos.
+  // Nome e frase de Essential e Care vêm dos próprios cards da seção O Club.
+  plans: [
+    ...club.plans.map((p) => ({ value: p.id, label: p.name, copy: p.tagline })),
+    { value: 'undecided', label: 'Ainda não sei', copy: 'Quero conhecer melhor antes de escolher.' },
   ],
   interests: [
     { value: 'alimentacao', label: 'Alimentação' },

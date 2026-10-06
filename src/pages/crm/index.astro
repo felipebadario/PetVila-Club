@@ -121,7 +121,7 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
           <table class="tbl">
             <thead>
               <tr>
-                <th>Data</th><th>Tutor</th><th>Cão</th><th>Contato</th><th>Cidade</th><th>Interesses</th><th>Origem</th><th>Status</th><th>Nota</th>
+                <th>Data</th><th>Tutor</th><th>Cão</th><th>Contato</th><th>Cidade</th><th>Interesses</th><th>Plano</th><th>Origem</th><th>Status</th><th>Nota</th>
               </tr>
             </thead>
             <tbody data-rows></tbody>
@@ -288,7 +288,7 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
   .filters__count { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
 
   .table-wrap { overflow-x: auto; border: 1.5px solid var(--fucinho); border-radius: 1.25rem; }
-  .tbl { width: 100%; border-collapse: collapse; min-width: 68rem; }
+  .tbl { width: 100%; border-collapse: collapse; min-width: 74rem; }
   .tbl th {
     text-align: left;
     font-size: 0.72rem;
@@ -310,6 +310,19 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
     font-size: 0.75rem;
     background: color-mix(in srgb, var(--terra) 10%, var(--chamego));
   }
+  .plan-tag {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    background: color-mix(in srgb, var(--fucinho) 8%, var(--chamego));
+  }
+  .plan-tag[data-plan='essential'] { background: color-mix(in srgb, var(--terra) 15%, var(--chamego)); }
+  .plan-tag[data-plan='care'] { background: var(--terra); color: var(--chamego); }
+  .plan-tag[data-plan='undecided'] { background: var(--patinha); color: var(--fucinho); }
+  .plan-tag[data-plan=''] { background: transparent; color: var(--ink-soft); font-weight: 600; }
   .tbl select {
     min-height: 2.25rem;
     border-radius: 999px;

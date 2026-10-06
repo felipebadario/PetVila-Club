@@ -34,7 +34,7 @@ import { club, cta } from '../content/copy';
               <p class="plan__originals-copy">{p.originals.copy}</p>
             </div>
           )}
-          <CtaButton origin={`club_${p.id}`} label={cta.short} size="md" class="plan__cta" />
+          <CtaButton origin={`club_${p.id}`} plan={p.id} label={cta.short} size="md" class="plan__cta" />
         </article>
       ))}
     </div>
