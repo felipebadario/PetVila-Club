@@ -3,8 +3,8 @@
 | Arquivo            | Usado em                                                  |
 | ------------------ | --------------------------------------------------------- |
 | `logo-petvila.svg` | Header, Footer, páginas internas (cor herdada do `tone`)  |
-| `caixas-petvila.svg` | Hero: as duas caixas empilhadas em 3D, como no print da embalagem |
-| `caixa-petvila.svg` | O Club: a caixa em 3D com a frase "Todo mês, uma nova surpresa para seu pet!" |
+| `caixas-petvila.svg` | Reserva: as duas caixas empilhadas em 3D, como no print da embalagem |
+| `caixa-petvila.svg` | Hero e O Club: a caixa em 3D com a frase "Todo mês, uma nova surpresa para seu pet!" |
 | `cao-petvila.svg`  | Primeiros da Vila: o cão em traço da caixa (cor herdada do `color`) |
 
 O logo atual foi vetorizado do print do brand book. Ao receber o vetor oficial,
