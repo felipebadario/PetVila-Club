@@ -7,7 +7,10 @@
 
 export type EnvGetter = (key: string) => string | undefined;
 
-const defaultEnv: EnvGetter = (k) => process.env[k] || (import.meta.env as Record<string, string | undefined>)[k];
+// Só process.env, lido na hora da requisição. Acessar import.meta.env com chave
+// dinâmica faz o build copiar para o bundle do servidor os valores que existiam
+// no build (inclusive o token), e uma flag apagada cairia no valor antigo.
+const defaultEnv: EnvGetter = (k) => process.env[k];
 
 export interface WhatsAppConfig {
   enabled: boolean;

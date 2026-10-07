@@ -70,6 +70,10 @@ Só no painel da Vercel (Production e, se quiser testar, Preview). Nenhuma usa
 
 Também continuam necessárias `LEADS_SHEETS_URL` e `LEADS_SHEETS_TOKEN`.
 
+As `WHATSAPP_*` são lidas só de `process.env`, na hora de cada requisição, e nunca
+entram no bundle do build. Em desenvolvimento, exporte-as no terminal antes do
+`npm run dev` (o `.env` não é lido para elas).
+
 ## Ligar e desligar
 
 - `WHATSAPP_ENABLED=false` (ou ausente): o cadastro segue igual, o opt-in é

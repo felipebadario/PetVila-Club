@@ -114,3 +114,14 @@ describe('sendWelcome', () => {
     expect(JSON.stringify((await leads()).get(lead.id))).not.toContain(cfg.accessToken);
   });
 });
+
+describe('getWhatsAppConfig', () => {
+  it('lê WHATSAPP_ENABLED a cada chamada e só liga com "true"', async () => {
+    const { getWhatsAppConfig } = await import('../src/lib/whatsapp/config');
+    for (const [v, on] of [['true', true], ['TRUE', true], [' true ', true], ['false', false], ['1', false], ['yes', false], ['', false]] as const) {
+      vi.stubEnv('WHATSAPP_ENABLED', v);
+      expect(getWhatsAppConfig().enabled).toBe(on);
+    }
+    vi.unstubAllEnvs();
+  });
+});
