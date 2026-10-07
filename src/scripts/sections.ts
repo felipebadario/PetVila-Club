@@ -141,7 +141,6 @@ export function initManifesto() {
   const root = document.querySelector<HTMLElement>('[data-manifesto]');
   if (!root) return;
   const words = [...root.querySelectorAll<HTMLElement>('.man__w')];
-  const track_ = root.querySelector<HTMLElement>('.man__track')!;
   const village = root.querySelector<HTMLElement>('.man__village');
   const strip = root.querySelector<HTMLElement>('.man__village-art');
   const closing = root.querySelector<HTMLElement>('[data-closing]');
@@ -153,11 +152,10 @@ export function initManifesto() {
   measure();
   window.addEventListener('resize', measure, { passive: true });
   onScrollFrame(() => {
-    const p = scrollProgress(track_);
-    // As palavras acendem nos primeiros 70% do trilho; depois entra o fecho "Vila".
-    const lit = Math.round(clamp(p / 0.7) * words.length);
-    words.forEach((w, i) => w.classList.toggle('is-on', i < lit));
-    closing?.classList.toggle('is-on', p > 0.72);
+    // Cada palavra acende quando passa de 65% da altura da tela; o fecho "Vila" entra a 80%.
+    const h = window.innerHeight;
+    words.forEach((w) => w.classList.toggle('is-on', w.getBoundingClientRect().top < h * 0.65));
+    closing?.classList.toggle('is-on', !!closing && closing.getBoundingClientRect().top < h * 0.8);
     // A Vila percorre a faixa da direita para a esquerda do momento em que entra pela base da
     // tela até sair pelo topo; o scroll vertical segue livre.
     if (village && strip) {

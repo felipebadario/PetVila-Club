@@ -8,19 +8,17 @@ const closing = manifesto.closing.split(/(Vila)/);
 ---
 
 <section class="man section-dark" aria-label="Manifesto" data-manifesto>
-  <div class="man__track">
-    <div class="man__sticky wrap">
-      <p class="man__text" aria-label={full}>
-        {lines.map((words) => (
-          <span class="man__line" aria-hidden="true">
-            {words.map((w) => <span class="man__w" style={`--k:${k++}`}>{w} </span>)}
-          </span>
-        ))}
-      </p>
-      <p class="man__closing" data-closing>
-        {closing.map((part) => (part === 'Vila' ? <em>Vila</em> : part))}
-      </p>
-    </div>
+  <div class="man__body wrap">
+    <p class="man__text" aria-label={full}>
+      {lines.map((words) => (
+        <span class="man__line" aria-hidden="true">
+          {words.map((w) => <span class="man__w" style={`--k:${k++}`}>{w} </span>)}
+        </span>
+      ))}
+    </p>
+    <p class="man__closing" data-closing>
+      {closing.map((part) => (part === 'Vila' ? <em>Vila</em> : part))}
+    </p>
   </div>
   <!-- A Vila: fileira de casinhas mais larga que a tela, que desliza para a esquerda enquanto passa pela tela. -->
   <div class="man__village" aria-hidden="true">
@@ -35,18 +33,13 @@ const closing = manifesto.closing.split(/(Vila)/);
     color: var(--chamego);
     overflow: clip;
   }
-  .man__track {
-    height: 220svh;
-  }
-  .man__sticky {
-    position: sticky;
-    top: 0;
-    min-height: 100svh;
+  /* Sem trava: o texto rola livre e as palavras acendem conforme sobem pela tela. */
+  .man__body {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: clamp(2rem, 6vw, 4rem);
-    padding-block: 5rem;
+    padding-block: clamp(6rem, 18svh, 10rem) clamp(4rem, 12svh, 7rem);
   }
   .man__text {
     font-family: var(--font-display);
@@ -91,7 +84,7 @@ const closing = manifesto.closing.split(/(Vila)/);
     font-style: normal;
     color: var(--patinha);
   }
-  /* Fica no fluxo, abaixo do trilho do texto fixo: assim nunca cobre a frase. */
+  /* Fica no fluxo, abaixo do texto: assim nunca cobre a frase. */
   .man__village {
     height: clamp(6rem, 15vw, 13.75rem);
     overflow: hidden;
