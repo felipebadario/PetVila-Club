@@ -91,11 +91,9 @@ const closing = manifesto.closing.split(/(Vila)/);
     font-style: normal;
     color: var(--patinha);
   }
+  /* Fica no fluxo, abaixo do trilho do texto fixo: assim nunca cobre a frase. */
   .man__village {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -1px;
+    position: relative;
     height: clamp(7rem, 15vw, 13.75rem);
     translate: 0 calc((1 - var(--v, 1)) * 100%);
   }
