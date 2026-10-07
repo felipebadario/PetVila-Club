@@ -19,6 +19,9 @@
  * WhatsApp (colunas AB em diante): opt-in, telefone normalizado e status da
  * mensagem de boas-vindas. Ações welcome_claim / welcome_record / welcome_status,
  * espelho de src/lib/whatsapp/status.ts no site. Nenhum token da Meta passa por aqui.
+ *
+ * Exclusão (ação delete): o CRM remove a linha inteira do lead, pelo id.
+ * Serve para limpar cadastros de teste; não há como desfazer pela API.
  */
 
 var SHEET_NAME = 'Leads';
@@ -220,6 +223,12 @@ function doPost(e) {
       return json_({ ok: true });
     }
     if (body.action === 'welcome_status') return json_(welcomeStatus_(sh, body.update));
+    if (body.action === 'delete') {
+      var drow = findRow_(sh, 'id', body.id);
+      if (!drow) return json_({ ok: false, error: 'not_found' });
+      sh.deleteRow(drow);
+      return json_({ ok: true });
+    }
     if (body.action === 'update') {
       if (body.status && STATUSES.indexOf(body.status) < 0) return json_({ ok: false, error: 'bad_status' });
       var ids = sh.getRange(2, 1, Math.max(sh.getLastRow() - 1, 1), 1).getValues();
