@@ -1,13 +1,13 @@
 """Gera src/assets/brand/vila-panorama.svg: a fileira de casinhas da Vila.
 
-A faixa é mais larga que a tela (~2,4 telas de 1440) para o Manifesto percorrê-la
+A faixa é mais larga que a tela (2 telas de 1440) para o Manifesto percorrê-la
 na horizontal conforme o scroll. As casas são sempre as mesmas 12 da frente e 9
 de trás, só reordenadas a cada volta para a Vila não parecer um carimbo.
 Uso: python3 scripts/vila-panorama.py > src/assets/brand/vila-panorama.svg
 """
 import sys
 
-W, H = 3456, 220
+W, H = 2880, 220
 PAT, TER, CHA = '#E25D28', '#562A22', '#FFE1BC'
 BACK = '#9A4123'  # Patinha misturada à Terra: fileira de trás, mais distante
 out = []
