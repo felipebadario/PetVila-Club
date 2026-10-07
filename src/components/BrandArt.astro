@@ -6,14 +6,15 @@
 import caixas from '../assets/brand/caixas-petvila.svg?raw';
 import caixa from '../assets/brand/caixa-petvila.svg?raw';
 import cao from '../assets/brand/cao-petvila.svg?raw';
+import vila from '../assets/brand/vila-panorama.svg?raw';
 
 interface Props {
-  art: 'caixas' | 'caixa' | 'cao';
+  art: 'caixas' | 'caixa' | 'cao' | 'vila';
   class?: string;
   [key: `data-${string}`]: string | number | undefined;
 }
 const { art, class: cls = '', ...attrs } = Astro.props;
-const raw = { caixas, caixa, cao }[art];
+const raw = { caixas, caixa, cao, vila }[art];
 const svg = raw.replace(/\s(role|aria-label)="[^"]*"/g, '').replace('<svg ', '<svg aria-hidden="true" focusable="false" ');
 ---
 

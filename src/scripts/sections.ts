@@ -151,6 +151,10 @@ export function initManifesto() {
     const lit = Math.round(clamp(p / 0.7) * words.length);
     words.forEach((w, i) => w.classList.toggle('is-on', i < lit));
     closing?.classList.toggle('is-on', p > 0.72);
-    village?.style.setProperty('--v', clamp((p - 0.55) / 0.4).toFixed(3));
+    // A Vila fica abaixo do trilho: as casinhas nascem do chão conforme a base da seção entra na tela.
+    if (village) {
+      const top = root.getBoundingClientRect().bottom - village.offsetHeight;
+      village.style.setProperty('--v', clamp((window.innerHeight - top) / village.offsetHeight).toFixed(3));
+    }
   });
 }
