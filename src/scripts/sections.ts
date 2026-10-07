@@ -142,19 +142,39 @@ export function initManifesto() {
   if (!root) return;
   const words = [...root.querySelectorAll<HTMLElement>('.man__w')];
   const track_ = root.querySelector<HTMLElement>('.man__track')!;
+  const sticky = root.querySelector<HTMLElement>('.man__sticky');
   const village = root.querySelector<HTMLElement>('.man__village');
+  const strip = root.querySelector<HTMLElement>('.man__village-art');
   const closing = root.querySelector<HTMLElement>('[data-closing]');
   if (reducedMotion()) return;
+  // O trilho tem 420svh (320svh de scroll): os primeiros 120svh acendem a frase, os 200svh
+  // seguintes percorrem a Vila da direita para a esquerda com o texto parado.
+  const TEXT = 120 / 320;
+  let travel = 0;
+  let overflow = 0;
+  const measure = () => {
+    travel = strip && village ? Math.max(0, strip.offsetWidth - village.clientWidth) : 0;
+    overflow = sticky ? Math.max(0, sticky.offsetHeight - window.innerHeight) : 0;
+  };
+  measure();
+  window.addEventListener('resize', measure, { passive: true });
+  // Velocidade em trapézio: acelera e freia nos 15% das pontas e fica constante no meio.
+  const A = 0.15;
+  const V = 1 / (1 - A);
+  const ease = (q: number) =>
+    q < A ? (V * q * q) / (2 * A) : q > 1 - A ? 1 - (V * (1 - q) ** 2) / (2 * A) : V * (q - A / 2);
+  let pin = -1;
   onScrollFrame(() => {
     const p = scrollProgress(track_);
-    // As palavras acendem nos primeiros 70% do trilho; depois entra o fecho "Vila".
-    const lit = Math.round(clamp(p / 0.7) * words.length);
+    const t = clamp(p / TEXT);
+    // As palavras acendem nos primeiros 70% da fase do texto; depois entra o fecho "Vila".
+    const lit = Math.round(clamp(t / 0.7) * words.length);
     words.forEach((w, i) => w.classList.toggle('is-on', i < lit));
-    closing?.classList.toggle('is-on', p > 0.72);
-    // A Vila fica abaixo do trilho: as casinhas nascem do chão conforme a base da seção entra na tela.
-    if (village) {
-      const top = root.getBoundingClientRect().bottom - village.offsetHeight;
-      village.style.setProperty('--v', clamp((window.innerHeight - top) / village.offsetHeight).toFixed(3));
-    }
+    closing?.classList.toggle('is-on', t > 0.72);
+    // Se o quadro não cabe na tela, ele sobe junto com o fecho para a Vila aparecer inteira.
+    const next = Math.round(-overflow * clamp((t - 0.6) / 0.4));
+    if (next !== pin) sticky?.style.setProperty('--pin', `${(pin = next)}px`);
+    const x = -travel * ease(clamp((p - TEXT) / (1 - TEXT)));
+    strip?.style.setProperty('--x', `${x.toFixed(1)}px`);
   });
 }

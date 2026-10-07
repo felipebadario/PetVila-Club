@@ -9,22 +9,24 @@ const closing = manifesto.closing.split(/(Vila)/);
 
 <section class="man section-dark" aria-label="Manifesto" data-manifesto>
   <div class="man__track">
-    <div class="man__sticky wrap">
-      <p class="man__text" aria-label={full}>
-        {lines.map((words) => (
-          <span class="man__line" aria-hidden="true">
-            {words.map((w) => <span class="man__w" style={`--k:${k++}`}>{w} </span>)}
-          </span>
-        ))}
-      </p>
-      <p class="man__closing" data-closing>
-        {closing.map((part) => (part === 'Vila' ? <em>Vila</em> : part))}
-      </p>
+    <div class="man__sticky">
+      <div class="man__copy wrap">
+        <p class="man__text" aria-label={full}>
+          {lines.map((words) => (
+            <span class="man__line" aria-hidden="true">
+              {words.map((w) => <span class="man__w" style={`--k:${k++}`}>{w} </span>)}
+            </span>
+          ))}
+        </p>
+        <p class="man__closing" data-closing>
+          {closing.map((part) => (part === 'Vila' ? <em>Vila</em> : part))}
+        </p>
+      </div>
+      <!-- A Vila: fileira de casinhas mais larga que a tela, percorrida na horizontal com o scroll. -->
+      <div class="man__village" aria-hidden="true">
+        <BrandArt art="vila" class="man__village-art" />
+      </div>
     </div>
-  </div>
-  <!-- A Vila: panorama de casinhas em Patinha nascendo do chão da seção seguinte. -->
-  <div class="man__village" aria-hidden="true">
-    <BrandArt art="vila" class="man__village-art" />
   </div>
 </section>
 
@@ -38,15 +40,25 @@ const closing = manifesto.closing.split(/(Vila)/);
   .man__track {
     height: 220svh;
   }
+  /* Com movimento, o trilho ganha 200svh para percorrer a Vila depois que a frase acende. */
+  :global(.js.motion) .man__track {
+    height: 420svh;
+  }
+  /* Texto em cima e Vila embaixo no mesmo quadro fixo: a Vila nunca cobre a frase. */
   .man__sticky {
     position: sticky;
-    top: 0;
+    /* Em telas baixas o quadro passa de 100svh: o JS sobe o `top` até a Vila encostar na base. */
+    top: var(--pin, 0px);
     min-height: 100svh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+  }
+  .man__copy {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: clamp(2rem, 6vw, 4rem);
-    padding-block: 5rem;
+    padding-block: 5rem clamp(1.5rem, 4svh, 3rem);
   }
   .man__text {
     font-family: var(--font-display);
@@ -91,17 +103,22 @@ const closing = manifesto.closing.split(/(Vila)/);
     font-style: normal;
     color: var(--patinha);
   }
-  /* Fica no fluxo, abaixo do trilho do texto fixo: assim nunca cobre a frase. */
   .man__village {
-    position: relative;
-    height: clamp(7rem, 15vw, 13.75rem);
-    translate: 0 calc((1 - var(--v, 1)) * 100%);
+    height: clamp(6rem, min(15vw, 24svh), 13.75rem);
+    overflow: hidden;
   }
-  /* O SVG corta pelas laterais (slice) e mantém o centro da Vila em telas estreitas. */
-  .man__village :global(.man__village-art),
-  .man__village :global(.man__village-art svg) {
-    width: 100%;
+  /* A faixa mantém a proporção do SVG e desliza da direita para a esquerda (--x vem do scroll). */
+  .man__village :global(.man__village-art) {
     height: 100%;
+    width: max-content;
+    transform: translate3d(var(--x, 0px), 0, 0);
+    will-change: transform;
+  }
+  .man__village :global(.man__village-art svg) {
+    display: block;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 3456 / 220;
   }
   @media (max-width: 759px) {
     .man__text { font-size: clamp(2.3rem, 10.5vw, 3.4rem); }
