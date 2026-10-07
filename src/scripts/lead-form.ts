@@ -57,6 +57,7 @@ export function initLeadForm() {
       interesses: fd.getAll('interesses'),
       preferredPlan: presetPlan || fd.get('preferredPlan') || '',
       consentimento: fd.get('consentimento') === 'on',
+      whatsapp_opt_in: fd.get('whatsapp_opt_in') === 'on',
     };
   };
 
@@ -183,6 +184,7 @@ export function initLeadForm() {
       ...data,
       consentimento_versao: copy.consentVersion,
       consentimento_texto: copy.consentText,
+      whatsapp_opt_in_texto: data.whatsapp_opt_in ? copy.whatsappOptInText : '',
       cta_origem: origin,
       utm_source: attribution.utm_source ?? '',
       utm_medium: attribution.utm_medium ?? '',

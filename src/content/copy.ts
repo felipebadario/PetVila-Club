@@ -200,9 +200,11 @@ export const form = {
     { value: 'viagens', label: 'Viagens' },
   ],
   // Versão do texto de consentimento: grave junto do lead para auditoria LGPD.
-  consentVersion: '2026-10-05',
-  consentText:
-    'Quero receber novidades da PetVila Club por e-mail e WhatsApp. Li e concordo com a Política de Privacidade.',
+  // 2026-10-07: o WhatsApp saiu deste texto e ganhou opt-in próprio (abaixo).
+  consentVersion: '2026-10-07',
+  consentText: 'Quero receber novidades da PetVila Club por e-mail. Li e concordo com a Política de Privacidade.',
+  // Opt-in explícito do WhatsApp: opcional, desmarcado por padrão, gravado no lead.
+  whatsappOptInText: 'Aceito receber novidades, lançamentos e comunicações da PetVila Club pelo WhatsApp.',
   success: {
     title: 'Bem-vindos à Vila.',
     body: 'Você e {dog} agora fazem parte dos Primeiros da Vila.',

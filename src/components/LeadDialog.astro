@@ -148,11 +148,15 @@ const total = 6;
         <label class="lead__consent">
           <input type="checkbox" name="consentimento" required />
           <span>
-            Quero receber novidades da PetVila Club por e-mail e WhatsApp. Li e concordo com a{' '}
+            Quero receber novidades da PetVila Club por e-mail. Li e concordo com a{' '}
             <a href="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a>.
           </span>
         </label>
         <p class="lead__err" data-err="consentimento" aria-live="polite"></p>
+        <label class="lead__consent lead__consent--opt">
+          <input type="checkbox" name="whatsapp_opt_in" />
+          <span>{form.whatsappOptInText}</span>
+        </label>
       </fieldset>
 
       <!-- Honeypot anti-spam: invisível para pessoas. -->
@@ -574,6 +578,9 @@ const total = 6;
     font-size: var(--step--1);
     line-height: 1.45;
     cursor: pointer;
+  }
+  .lead__consent--opt {
+    margin-top: 0.25rem;
   }
   .lead__consent input {
     width: 1.35rem;

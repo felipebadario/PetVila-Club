@@ -1,7 +1,8 @@
 # PetVila Club · Landing Page de pré-lançamento
 
-Astro 7 + TypeScript, sem biblioteca de animação. Página estática com uma
-função serverless (`/api/leads`) para o cadastro "Primeiros da Vila".
+Astro 7 + TypeScript, sem biblioteca de animação. Página estática com funções
+serverless para o cadastro "Primeiros da Vila" (`/api/leads`) e o webhook do WhatsApp
+(`/api/webhooks/whatsapp`).
 
 Decisões, pendências e diagnóstico de domínio: [`docs/primeira-entrega.md`](docs/primeira-entrega.md).
 
@@ -25,6 +26,7 @@ Sem planilha configurada, os cadastros feitos em desenvolvimento vão para `.dat
 | `npm run build` | Build de produção (saída em `.vercel/output`) |
 | `npm run preview` | Serve o build localmente |
 | `npm run check` | Checagem de tipos e de templates |
+| `npm test` | Testes (Vitest) |
 
 ## Variáveis de ambiente
 
@@ -35,6 +37,7 @@ Em produção, configure no painel da hospedagem (nunca no repositório):
 - `PUBLIC_SITE_URL=https://petvilaclub.com.br`
 - `LEADS_SHEETS_URL` e `LEADS_SHEETS_TOKEN` (planilha Google; instalação em `docs/primeira-entrega.md`, seção 12)
 - `CRM_PASSWORD` e `CRM_SESSION_SECRET` (acesso a `/crm`)
+- `WHATSAPP_*` (boas-vindas e webhook do WhatsApp; desligado com `WHATSAPP_ENABLED=false`). Veja [`docs/whatsapp.md`](docs/whatsapp.md)
 - `PUBLIC_GA4_ID`, `PUBLIC_META_PIXEL_ID` quando o consentimento de cookies estiver pronto
 
 ## Onde mexer
@@ -47,6 +50,7 @@ Em produção, configure no painel da hospedagem (nunca no repositório):
 - CRM: `src/pages/crm/index.astro` e `src/scripts/crm.ts`
 - Fotos provisórias: `src/content/photos.ts`
 - Eventos de tracking: `src/lib/tracking.ts`
+- WhatsApp (envio, webhook, status): `src/lib/whatsapp/` e `src/pages/api/webhooks/whatsapp.ts`
 - Assets pendentes: procure por `<Placeholder` nos componentes
 
 ## Deploy (Vercel)
