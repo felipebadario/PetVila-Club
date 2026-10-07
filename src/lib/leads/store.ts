@@ -31,6 +31,8 @@ export interface LeadStore {
   save(lead: StoredLead): Promise<void>;
   list?(): Promise<CrmLead[]>;
   update?(id: string, patch: { status?: LeadStatus; nota?: string }): Promise<void>;
+  /** Remove o lead da base (limpeza de cadastros de teste). Lança 'not_found' se não existir. */
+  remove?(id: string): Promise<void>;
   /**
    * Idempotência das boas-vindas, atômica na base: reserva o envio para o lead
    * (status "sending") só se ele ainda não tiver status e se nenhum outro lead
@@ -80,6 +82,11 @@ class SheetsStore implements LeadStore {
 
   async update(id: string, patch: { status?: LeadStatus; nota?: string }) {
     await this.post({ action: 'update', id, ...patch });
+  }
+
+  // Exige a versão do Code.gs com a ação delete; a anterior responde unknown_action.
+  async remove(id: string) {
+    await this.post({ action: 'delete', id });
   }
 
   // Exigem a versão do Code.gs com welcome_*; a anterior responde unknown_action (erro).
@@ -145,6 +152,12 @@ class LocalFileStore implements LeadStore {
     if (patch.nota !== undefined) l.nota = patch.nota;
     l.atualizado_em = new Date().toISOString();
     await this.write(all);
+  }
+  async remove(id: string) {
+    const all = await this.read();
+    const rest = all.filter((x) => x.id !== id);
+    if (rest.length === all.length) throw new Error('not_found');
+    await this.write(rest);
   }
   async claimWelcome(id: string, phone: string) {
     const all = await this.read();

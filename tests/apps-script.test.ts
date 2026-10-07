@@ -19,6 +19,7 @@ class FakeSheet {
   insertColumnsAfter = (_: number, n: number) => void (this.maxCols += n);
   setFrozenRows = () => {};
   appendRow = (r: unknown[]) => void this.rows.push(r.map(this.store));
+  deleteRow = (row: number) => void this.rows.splice(row - 1, 1);
   getRange = (row: number, col: number, nr = 1, nc = 1) => {
     const self = this;
     const values = () =>
@@ -141,6 +142,18 @@ describe('Code.gs', () => {
     expect(cell(2, 'welcome_error_message')).toBe('Opted out: User stopped');
     expect(post({ action: 'welcome_status', update: { wamid: 'wamid.outro', status: 'sent', timestamp: 't' } }).result).toBe('not_found');
     expect(post({ action: 'welcome_status', update: { wamid: 'wamid.X', status: 'deleted' } }).ok).toBe(false);
+  });
+
+  it('delete remove só a linha do lead pelo id', () => {
+    post({ action: 'append', lead: makeLead({ id: 'A' }) });
+    post({ action: 'append', lead: makeLead({ id: 'B', nome: 'Teste' }) });
+    post({ action: 'append', lead: makeLead({ id: 'C' }) });
+    expect(post({ action: 'delete', id: 'B' })).toEqual({ ok: true });
+    expect(list().map((l) => l.id)).toEqual(['A', 'C']);
+    expect(sheet.rows[0][0]).toBe('id'); // cabeçalho intacto
+    expect(post({ action: 'delete', id: 'B' })).toEqual({ ok: false, error: 'not_found' });
+    expect(post({ action: 'delete' })).toEqual({ ok: false, error: 'not_found' });
+    expect(list()).toHaveLength(2);
   });
 
   it('ações antigas continuam funcionando', () => {
