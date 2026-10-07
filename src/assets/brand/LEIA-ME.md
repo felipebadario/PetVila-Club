@@ -6,6 +6,7 @@
 | `caixas-petvila.svg` | Reserva: as duas caixas empilhadas em 3D, como no print da embalagem |
 | `caixa-petvila.svg` | Hero e O Club: a caixa em 3D com a frase "Todo mês, uma nova surpresa para seu pet!" |
 | `cao-petvila.svg`  | Primeiros da Vila: o cão em traço da caixa (cor herdada do `color`) |
+| `vila-panorama.svg` | Manifesto: panorama de casinhas na base da seção, nas cores da marca |
 
 O logo atual foi vetorizado do print do brand book. Ao receber o vetor oficial,
 substitua o arquivo mantendo um único `<path>` (ou vários) com `fill="currentColor"`
