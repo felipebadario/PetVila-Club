@@ -20,3 +20,6 @@ export const env = {
   ga4Id: import.meta.env.PUBLIC_GA4_ID || '',
   metaPixelId: import.meta.env.PUBLIC_META_PIXEL_ID || '',
 } as const;
+
+/** Há rastreamento de terceiros a consentir? Sem isso, nem o banner de cookies aparece. */
+export const trackingEnabled = env.appEnv === 'production' && Boolean(env.ga4Id || env.metaPixelId);

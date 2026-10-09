@@ -1,0 +1,135 @@
+---
+/**
+ * Banner de consentimento de cookies (LGPD). Só é renderizado quando há GA4 ou
+ * Meta Pixel ativos (trackingEnabled). Recusar tem o mesmo peso que aceitar.
+ * Qualquer elemento com [data-cookie-prefs] reabre o banner para mudar a escolha.
+ */
+import { cookies } from '../content/copy';
+---
+
+<section class="ck" data-cookie-banner aria-labelledby="ck-title" hidden>
+  <p id="ck-title" class="ck__title eyebrow">{cookies.title}</p>
+  <p class="ck__text">
+    {cookies.text} <a href="/privacidade#cookies">{cookies.more}</a>
+  </p>
+  <div class="ck__actions">
+    <button type="button" class="ck__btn" data-consent="denied">{cookies.deny}</button>
+    <button type="button" class="ck__btn ck__btn--accept" data-consent="granted">{cookies.accept}</button>
+  </div>
+</section>
+
+<script>
+  import type { ConsentValue } from '../lib/tracking';
+
+  const banner = document.querySelector<HTMLElement>('[data-cookie-banner]');
+  const consent = window.pvConsent;
+
+  if (banner && consent) {
+    let opener: HTMLElement | null = null;
+
+    const show = (focus = false) => {
+      banner.hidden = false;
+      requestAnimationFrame(() => banner.classList.add('is-in'));
+      if (focus) banner.querySelector<HTMLButtonElement>('[data-consent]')?.focus();
+    };
+    const hide = () => {
+      banner.classList.remove('is-in');
+      banner.hidden = true;
+      opener?.focus();
+      opener = null;
+    };
+
+    banner.querySelectorAll<HTMLButtonElement>('[data-consent]').forEach((btn) =>
+      btn.addEventListener('click', () => {
+        hide();
+        consent.set(btn.dataset.consent as ConsentValue);
+      }),
+    );
+
+    document.querySelectorAll<HTMLElement>('[data-cookie-prefs]').forEach((el) => {
+      el.hidden = false;
+      el.addEventListener('click', () => {
+        opener = el;
+        show(true);
+      });
+    });
+
+    if (!consent.get()) show();
+  }
+</script>
+
+<style>
+  .ck {
+    position: fixed;
+    z-index: 150;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: max(var(--gutter), env(safe-area-inset-bottom));
+    max-width: 30rem;
+    padding: 1.5rem;
+    display: grid;
+    gap: 0.85rem;
+    background: var(--fucinho);
+    color: var(--chamego);
+    border-radius: var(--radius);
+    box-shadow: 0 1.25rem 3rem -1rem color-mix(in srgb, var(--fucinho) 55%, transparent);
+  }
+  .motion .ck {
+    opacity: 0;
+    transform: translate3d(0, 1.5rem, 0);
+    transition:
+      opacity 400ms var(--ease-out),
+      transform 600ms var(--ease-spring);
+  }
+  .motion .ck.is-in {
+    opacity: 1;
+    transform: none;
+  }
+  .ck :focus-visible {
+    outline-color: var(--chamego);
+  }
+  .ck__text {
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
+  .ck__text a {
+    font-weight: 700;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--patinha);
+    text-decoration-thickness: 2px;
+  }
+  .ck__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-top: 0.25rem;
+  }
+  .ck__btn {
+    min-height: 2.9rem;
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--chamego);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--chamego);
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition:
+      background-color 250ms ease,
+      color 250ms ease,
+      transform 400ms var(--ease-spring);
+    touch-action: manipulation;
+  }
+  .ck__btn--accept {
+    background: var(--chamego);
+    color: var(--fucinho);
+  }
+  .ck__btn:hover {
+    background: var(--terra);
+    color: var(--chamego);
+  }
+  .ck__btn:active {
+    transform: scale(0.97);
+  }
+</style>

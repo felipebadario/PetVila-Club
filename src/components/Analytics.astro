@@ -1,33 +1,83 @@
 ---
 /**
- * GA4 e Meta Pixel só carregam em produção e quando os IDs existem.
- * PENDENTE: banner/gestão de consentimento de cookies antes de ativar (LGPD).
+ * GA4 e Meta Pixel só carregam em produção, com os IDs definidos e depois que
+ * o visitante aceita os cookies (LGPD). Até lá nenhum script de terceiro é
+ * baixado. A escolha fica em localStorage por 12 meses; o banner que a coleta
+ * é o CookieBanner. A API window.pvConsent fica disponível para os dois.
  */
-import { env } from '../config/site';
-const enabled = env.appEnv === 'production';
+import { env, trackingEnabled } from '../config/site';
 const { ga4Id, metaPixelId } = env;
 ---
 
 <script is:inline>window.dataLayer = window.dataLayer || [];</script>
-{enabled && ga4Id && (
-  <>
-    <script async src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}></script>
-    <script is:inline define:vars={{ ga4Id }}>
-      function gtag(){dataLayer.push(arguments);}
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', ga4Id, { anonymize_ip: true });
-    </script>
-  </>
-)}
-{enabled && metaPixelId && (
-  <script is:inline define:vars={{ metaPixelId }}>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', metaPixelId);
-    fbq('track', 'PageView');
+{trackingEnabled && (
+  <script is:inline define:vars={{ ga4Id, metaPixelId }}>
+    (function () {
+      var KEY = 'pv_cookie_consent';
+      var VERSION = 1;
+      var MAX_AGE = 365 * 864e5;
+      var loaded = false;
+
+      function get() {
+        try {
+          var c = JSON.parse(localStorage.getItem(KEY) || 'null');
+          if (c && c.v === VERSION && (c.value === 'granted' || c.value === 'denied') && Date.now() - c.at < MAX_AGE) return c.value;
+        } catch (e) {}
+        return null;
+      }
+
+      function load() {
+        if (loaded) return;
+        loaded = true;
+        if (ga4Id) {
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(ga4Id);
+          document.head.appendChild(s);
+          window.gtag = function () { dataLayer.push(arguments); };
+          gtag('js', new Date());
+          gtag('config', ga4Id, { anonymize_ip: true });
+        }
+        if (metaPixelId) {
+          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+          document,'script','https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', metaPixelId);
+          fbq('track', 'PageView');
+        }
+      }
+
+      // Ao revogar: apaga os cookies que GA4 e Meta deixaram neste domínio e recarrega
+      // a página para descarregar os scripts já em execução.
+      function clearTrackerCookies() {
+        var host = location.hostname;
+        var domains = ['', host, '.' + host, '.' + host.split('.').slice(-3).join('.'), '.' + host.split('.').slice(-2).join('.')];
+        document.cookie.split(';').forEach(function (c) {
+          var name = c.split('=')[0].trim();
+          if (!/^(_ga|_gid|_gat|_fbp|_fbc)/.test(name)) return;
+          domains.forEach(function (d) {
+            document.cookie = name + '=; Max-Age=0; path=/' + (d ? '; domain=' + d : '');
+          });
+        });
+      }
+
+      function set(value) {
+        var prev = get();
+        try {
+          localStorage.setItem(KEY, JSON.stringify({ v: VERSION, value: value, at: Date.now() }));
+        } catch (e) {}
+        document.dispatchEvent(new CustomEvent('pv:consent', { detail: value }));
+        if (value === 'granted') return load();
+        if (loaded || prev === 'granted') {
+          clearTrackerCookies();
+          location.reload();
+        }
+      }
+
+      window.pvConsent = { get: get, set: set };
+      if (get() === 'granted') load();
+    })();
   </script>
 )}

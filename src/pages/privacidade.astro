@@ -1,6 +1,7 @@
 ---
 import SimplePage from '../components/SimplePage.astro';
-import { site } from '../config/site';
+import { site, env, trackingEnabled } from '../config/site';
+import { cookies } from '../content/copy';
 ---
 
 <SimplePage title="Política de Privacidade" description="Como a PetVila Club trata os dados dos Primeiros da Vila.">
@@ -67,17 +68,33 @@ import { site } from '../config/site';
       acesso do seu navegador ao carregá-las;</li>
     <li><strong>Meta</strong> (WhatsApp Business Platform): envio das mensagens pelo WhatsApp para quem autorizou, que
       recebe o seu nome e o número do WhatsApp;</li>
+    {trackingEnabled && env.ga4Id && <li><strong>Google</strong> (Google Analytics): medição de visitas, só se você aceitar os cookies;</li>}
+    {trackingEnabled && env.metaPixelId && <li><strong>Meta</strong> (Pixel da Meta): medição de anúncios no Facebook e no Instagram, só se você aceitar os cookies;</li>}
     <li>provedores de e-mail, quando entramos em contato com você por esse canal.</li>
   </ul>
   <p>Alguns desses fornecedores podem processar dados em servidores fora do Brasil. Nesses casos, a transferência
     ocorre para viabilizar o serviço e com as garantias previstas na LGPD.</p>
   <p>Também podemos compartilhar dados quando exigido por lei ou por ordem de autoridade competente.</p>
 
-  <h2>Cookies e tecnologias semelhantes</h2>
-  <p>Esta página não usa cookies de publicidade nem ferramentas de analytics. Para registrar a origem da visita,
-    guardamos essas informações (parâmetros de campanha, site de origem e página de entrada) no armazenamento de sessão
-    do seu navegador, que é apagado quando você fecha a aba. Se no futuro passarmos a usar ferramentas de analytics ou
-    publicidade, esta política será atualizada antes disso e, quando necessário, pediremos o seu consentimento.</p>
+  <h2 id="cookies">Cookies e tecnologias semelhantes</h2>
+  {trackingEnabled ? (
+    <>
+      <p>A página funciona sem cookies de terceiros. Com a sua autorização, usamos
+        {env.ga4Id && env.metaPixelId ? ' o Google Analytics, para contar visitas e entender como a página é usada, e o Pixel da Meta, para medir quais anúncios no Facebook e no Instagram trazem pessoas até aqui.'
+          : env.ga4Id ? ' o Google Analytics, para contar visitas e entender como a página é usada.'
+          : ' o Pixel da Meta, para medir quais anúncios no Facebook e no Instagram trazem pessoas até aqui.'}{' '}
+        Essas ferramentas só são carregadas depois que você clica em “{cookies.accept}” no aviso de cookies. Sua escolha
+        fica salva neste navegador por 12 meses e pode ser trocada a qualquer momento.</p>
+      <p>Para registrar a origem da visita, guardamos os parâmetros de campanha, o site de origem e a página de entrada no
+        armazenamento de sessão do seu navegador, que é apagado quando você fecha a aba.</p>
+      <p><button type="button" class="prefs" data-cookie-prefs hidden>{cookies.prefs}</button></p>
+    </>
+  ) : (
+    <p>Esta página não usa cookies de publicidade nem ferramentas de analytics. Para registrar a origem da visita,
+      guardamos essas informações (parâmetros de campanha, site de origem e página de entrada) no armazenamento de sessão
+      do seu navegador, que é apagado quando você fecha a aba. Se no futuro passarmos a usar ferramentas de analytics ou
+      publicidade, esta política será atualizada antes disso e, quando necessário, pediremos o seu consentimento.</p>
+  )}
 
   <h2>Seus direitos</h2>
   <p>A LGPD garante a você, a qualquer momento:</p>
@@ -109,3 +126,14 @@ import { site } from '../config/site';
   <h2>Contato</h2>
   <p>{site.legalName} · CNPJ {site.cnpj}<br /><a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a></p>
 </SimplePage>
+
+<style>
+  .prefs {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

@@ -214,6 +214,15 @@ export const form = {
   },
 };
 
+export const cookies = {
+  title: 'Cookies na Vila',
+  text: 'Usamos cookies do Google Analytics e da Meta para contar visitas e entender quais anúncios trazem gente para a Vila. Eles só entram se você aceitar.',
+  more: 'Saiba mais',
+  accept: 'Aceitar',
+  deny: 'Recusar',
+  prefs: 'Preferências de cookies',
+};
+
 export const ufs = [
   'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB',
   'PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO',
