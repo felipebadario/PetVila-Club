@@ -137,7 +137,7 @@ As fotos entram pelo componente `<Image>` do Astro (gera WebP/AVIF e tamanhos re
 3. **Instagram oficial** (@) e **e-mail de contato**: links ficam ocultos até preencher `src/config/site.ts`.
 4. **Razão social e CNPJ** para rodapé e Política de Privacidade.
 5. **Política de Privacidade e Termos**: há um rascunho estrutural marcado como pendente de revisão jurídica. Faltam controlador, encarregado (DPO), operadores e prazo de retenção.
-6. **Banner de cookies / consentimento para GA4 e Meta Pixel**: os scripts só carregam com os IDs definidos e em produção; recomendo ativar junto com um banner.
+6. ~~Banner de cookies~~ **Feito**: com `PUBLIC_GA4_ID` ou `PUBLIC_META_PIXEL_ID` definidos em produção, aparece um aviso de cookies; GA4 e Meta Pixel só são baixados depois de "Aceitar". "Recusar" tem o mesmo peso, a escolha vale 12 meses (localStorage `pv_cookie_consent`) e pode ser trocada pelo link "Preferências de cookies" no rodapé e na Política de Privacidade. Revogar apaga os cookies `_ga`/`_fbp` e recarrega a página. A seção Cookies da política ainda entra na revisão jurídica.
 7. **Consentimento**: hoje é um único checkbox obrigatório (e-mail + WhatsApp + política). Se quiser WhatsApp opcional separado, é rápido mudar.
 8. **Microcopy dos 5 momentos e frase de apoio "Entrar não é comprar nem assinar nada"**: propostas minhas para revisão.
 9. **Faixas de idade do cão** (filhote, 1–3, 4–7, 8+), com opção de data de nascimento: confirmar se servem para segmentação.

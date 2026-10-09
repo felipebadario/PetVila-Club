@@ -35,7 +35,7 @@ Em produção, configure no painel da hospedagem (nunca no repositório):
 - `PUBLIC_SITE_URL=https://petvilaclub.com.br`
 - `LEADS_SHEETS_URL` e `LEADS_SHEETS_TOKEN` (planilha Google; instalação em `docs/primeira-entrega.md`, seção 12)
 - `CRM_PASSWORD` e `CRM_SESSION_SECRET` (acesso a `/crm`)
-- `PUBLIC_GA4_ID`, `PUBLIC_META_PIXEL_ID` quando o consentimento de cookies estiver pronto
+- `PUBLIC_GA4_ID`, `PUBLIC_META_PIXEL_ID` (opcionais; só carregam depois que o visitante aceita o banner de cookies)
 
 ## Onde mexer
 

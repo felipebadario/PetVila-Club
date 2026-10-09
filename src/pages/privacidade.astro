@@ -1,6 +1,7 @@
 ---
 import SimplePage from '../components/SimplePage.astro';
-import { site } from '../config/site';
+import { site, trackingEnabled } from '../config/site';
+import { cookies } from '../content/copy';
 ---
 
 <SimplePage title="Política de Privacidade" description="Como a PetVila Club trata os dados dos Primeiros da Vila.">
@@ -26,6 +27,24 @@ import { site } from '../config/site';
   <p>Você pode pedir acesso, correção, portabilidade ou exclusão dos seus dados e revogar o consentimento.
     {site.contactEmail ? <>Escreva para <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</> : <span class="pending-inline">[PENDENTE: canal de contato]</span>}</p>
 
+  <h2 id="cookies">Cookies</h2>
+  <p>O site funciona sem cookies de terceiros. Com a sua autorização, usamos o Google Analytics (Google) para contar visitas
+    e entender como a página é usada, e o Pixel da Meta (Facebook e Instagram) para medir quais anúncios trazem pessoas até aqui.
+    Esses serviços só são carregados depois que você clica em “{cookies.accept}” no aviso de cookies. Sua escolha fica salva
+    neste navegador por 12 meses e pode ser trocada a qualquer momento.</p>
+  {trackingEnabled && <p><button type="button" class="prefs" data-cookie-prefs hidden>{cookies.prefs}</button></p>}
+
   <h2>Compartilhamento</h2>
   <p><span class="pending-inline">[PENDENTE: listar operadores, como hospedagem e ferramenta de e-mail/CRM.]</span></p>
 </SimplePage>
+
+<style>
+  .prefs {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

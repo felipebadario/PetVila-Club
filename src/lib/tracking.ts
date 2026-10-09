@@ -4,6 +4,8 @@
  * Trocar ou adicionar ferramentas mexe só neste arquivo.
  */
 
+export type ConsentValue = 'granted' | 'denied';
+
 type Params = Record<string, string | number | boolean | undefined>;
 
 declare global {
@@ -11,6 +13,11 @@ declare global {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
     fbq?: (...args: unknown[]) => void;
+    /** Definido em Analytics.astro quando há GA4/Meta a consentir. */
+    pvConsent?: {
+      get: () => ConsentValue | null;
+      set: (value: ConsentValue) => void;
+    };
   }
 }
 
