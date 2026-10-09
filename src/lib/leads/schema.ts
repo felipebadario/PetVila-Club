@@ -6,6 +6,10 @@
 export const SIZES = ['pequeno', 'medio', 'grande'] as const;
 export const AGES = ['filhote', 'jovem', 'adulto', 'senior'] as const;
 export const INTERESTS = ['alimentacao', 'brinquedos', 'higiene', 'passeios', 'organizacao', 'viagens'] as const;
+/** Plano de interesse. '' = não informado (leads anteriores ao campo). */
+export const PLANS = ['essential', 'care', 'undecided'] as const;
+export type PreferredPlan = (typeof PLANS)[number];
+export const isPlan = (v: unknown): v is PreferredPlan => (PLANS as readonly unknown[]).includes(v);
 export const UFS = [
   'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB',
   'PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO',
@@ -22,9 +26,13 @@ export interface Lead {
   cidade: string;
   uf: (typeof UFS)[number];
   interesses: (typeof INTERESTS)[number][];
+  preferredPlan: PreferredPlan | '';
   consentimento: true;
   consentimento_versao: string;
   consentimento_texto: string;
+  /** Opt-in do WhatsApp: separado do consentimento geral e desmarcado por padrão. */
+  whatsapp_opt_in: boolean;
+  whatsapp_opt_in_texto: string; // texto exibido ao lado da caixa, quando marcada
   cta_origem: string;
   utm_source: string;
   utm_medium: string;
@@ -39,7 +47,13 @@ export interface Lead {
 export interface StoredLead extends Lead {
   id: string;
   criado_em: string; // ISO 8601, UTC
+  source: string; // de onde veio o cadastro (ex.: LEAD_SOURCE)
+  whatsapp_e164: string; // 55 + DDD + número, pronto para a Cloud API; '' se inválido
+  whatsapp_opt_in_at: string; // ISO 8601, UTC; '' sem opt-in
 }
+
+/** Origem dos cadastros feitos pelo formulário da LP. */
+export const LEAD_SOURCE = 'lp-primeiros-da-vila';
 
 export type LeadErrors = Partial<Record<keyof Lead, string>>;
 
@@ -69,6 +83,7 @@ export function validateLead(input: Record<string, unknown>, fields?: (keyof Lea
   const porte = str(input.porte, 10);
   const idade_faixa = str(input.idade_faixa, 10);
   const nascimento = str(input.nascimento, 10);
+  const preferredPlan = str(input.preferredPlan, 20);
   const interesses = Array.isArray(input.interesses)
     ? input.interesses.filter((i): i is Lead['interesses'][number] => (INTERESTS as readonly string[]).includes(i as string))
     : [];
@@ -90,6 +105,10 @@ export function validateLead(input: Record<string, unknown>, fields?: (keyof Lea
     e.whatsapp = 'Informe o WhatsApp com DDD.';
   if (want('cidade') && cidade.length < 2) e.cidade = 'Qual é a sua cidade?';
   if (want('uf') && !(UFS as readonly string[]).includes(uf)) e.uf = 'Escolha o estado.';
+  // Obrigatório na etapa do formulário. No servidor, vazio é aceito para não perder
+  // cadastros de abas abertas antes do campo existir; valor desconhecido é recusado.
+  if (fields?.includes('preferredPlan') && !preferredPlan) e.preferredPlan = 'Escolha uma das opções.';
+  else if (want('preferredPlan') && preferredPlan && !isPlan(preferredPlan)) e.preferredPlan = 'Escolha uma das opções.';
   if (want('consentimento') && input.consentimento !== true)
     e.consentimento = 'Precisamos do seu consentimento para te avisar do lançamento.';
 
@@ -104,9 +123,13 @@ export function validateLead(input: Record<string, unknown>, fields?: (keyof Lea
     cidade,
     uf: uf as Lead['uf'],
     interesses: [...new Set(interesses)],
+    preferredPlan: isPlan(preferredPlan) ? preferredPlan : '',
     consentimento: true,
     consentimento_versao: str(input.consentimento_versao, 20),
     consentimento_texto: str(input.consentimento_texto, 300),
+    // Só conta como opt-in o booleano true vindo da caixa marcada.
+    whatsapp_opt_in: input.whatsapp_opt_in === true,
+    whatsapp_opt_in_texto: input.whatsapp_opt_in === true ? str(input.whatsapp_opt_in_texto, 300) : '',
     cta_origem: str(input.cta_origem, 40),
     utm_source: str(input.utm_source, 150),
     utm_medium: str(input.utm_medium, 150),

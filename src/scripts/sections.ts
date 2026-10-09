@@ -84,6 +84,32 @@ export function initCuradoria() {
   });
 }
 
+/* ---------- Como funciona: ciclo escolhido acende as caixas; passo em foco no scroll ---------- */
+export function initComoFunciona() {
+  const root = document.querySelector<HTMLElement>('[data-how]');
+  if (!root) return;
+  const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-cycle-btn]')];
+  const caption = root.querySelector<HTMLElement>('[data-cycle-caption]');
+
+  buttons.forEach((b) =>
+    b.addEventListener('click', () => {
+      const n = b.dataset.cycleBtn!;
+      if (root.dataset.cycle === n) return;
+      root.dataset.cycle = n;
+      buttons.forEach((o) => o.setAttribute('aria-pressed', String(o === b)));
+      if (caption) caption.textContent = caption.dataset.template!.replaceAll('{n}', n);
+      track('cycle_select', { cycle: Number(n) });
+    }),
+  );
+
+  const steps = [...root.querySelectorAll<HTMLElement>('[data-how-step]')];
+  const io = new IntersectionObserver(
+    (entries) => entries.forEach((e) => e.target.classList.toggle('is-current', e.isIntersecting)),
+    { rootMargin: '-38% 0px -38% 0px' },
+  );
+  steps.forEach((s) => io.observe(s));
+}
+
 /* ---------- O Club: superfícies que reagem ao cursor / ao scroll no mobile ---------- */
 export function initClub() {
   const plans = [...document.querySelectorAll<HTMLElement>('.plan')];
@@ -96,8 +122,8 @@ export function initClub() {
         p.style.setProperty('--my', `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`);
       });
       p.addEventListener('pointerleave', () => {
-        p.style.setProperty('--mx', '50%');
-        p.style.setProperty('--my', '50%');
+        p.style.removeProperty('--mx');
+        p.style.removeProperty('--my');
       });
     });
   } else {
@@ -115,16 +141,27 @@ export function initManifesto() {
   const root = document.querySelector<HTMLElement>('[data-manifesto]');
   if (!root) return;
   const words = [...root.querySelectorAll<HTMLElement>('.man__w')];
-  const track_ = root.querySelector<HTMLElement>('.man__track')!;
   const village = root.querySelector<HTMLElement>('.man__village');
+  const strip = root.querySelector<HTMLElement>('.man__village-art');
   const closing = root.querySelector<HTMLElement>('[data-closing]');
   if (reducedMotion()) return;
+  let travel = 0;
+  const measure = () => {
+    travel = strip && village ? Math.max(0, strip.offsetWidth - village.clientWidth) : 0;
+  };
+  measure();
+  window.addEventListener('resize', measure, { passive: true });
   onScrollFrame(() => {
-    const p = scrollProgress(track_);
-    // As palavras acendem nos primeiros 70% do trilho; depois entra o fecho "Vila".
-    const lit = Math.round(clamp(p / 0.7) * words.length);
-    words.forEach((w, i) => w.classList.toggle('is-on', i < lit));
-    closing?.classList.toggle('is-on', p > 0.72);
-    village?.style.setProperty('--v', clamp((p - 0.55) / 0.4).toFixed(3));
+    // Cada palavra acende quando passa de 65% da altura da tela; o fecho "Vila" entra a 80%.
+    const h = window.innerHeight;
+    words.forEach((w) => w.classList.toggle('is-on', w.getBoundingClientRect().top < h * 0.65));
+    closing?.classList.toggle('is-on', !!closing && closing.getBoundingClientRect().top < h * 0.8);
+    // A Vila percorre a faixa da direita para a esquerda do momento em que entra pela base da
+    // tela até sair pelo topo; o scroll vertical segue livre.
+    if (village && strip) {
+      const r = village.getBoundingClientRect();
+      const q = clamp((window.innerHeight - r.top) / (window.innerHeight + r.height));
+      strip.style.setProperty('--x', `${(-travel * q).toFixed(1)}px`);
+    }
   });
 }

@@ -14,9 +14,8 @@ const looks = [
 
 <section class="rot" id="rotina" aria-labelledby="rot-title" data-rotina style={`--n:${rotina.moments.length}`}>
   <header class="rot__head wrap">
-    <p class="eyebrow" data-reveal>{rotina.eyebrow}</p>
-    <h2 id="rot-title" class="rot__title" data-reveal style="--reveal-i:1">{rotina.headline}</h2>
-    <p class="rot__intro" data-reveal style="--reveal-i:2">{rotina.intro}</p>
+    <h2 id="rot-title" class="rot__title" data-reveal>{rotina.headline}</h2>
+    <p class="rot__intro" data-reveal style="--reveal-i:1">{rotina.intro}</p>
   </header>
   <div class="rot__track">
     <div class="rot__sticky wrap">
@@ -32,7 +31,6 @@ const looks = [
                 aria-pressed={i === 0 ? 'true' : 'false'}
                 aria-controls={`rot-panel-${m.id}`}
               >
-                <span class="rot__num" aria-hidden="true">0{i + 1}</span>
                 <span class="rot__label">{m.label}</span>
               </button>
             </li>
@@ -76,7 +74,6 @@ const looks = [
   .rot__title {
     font-size: var(--step-3);
     max-width: 14ch;
-    margin-top: 1rem;
   }
   .rot__body {
     display: grid;
@@ -106,13 +103,6 @@ const looks = [
       color 400ms ease,
       transform 600ms var(--ease-out);
     -webkit-tap-highlight-color: transparent;
-  }
-  .rot__num {
-    font-family: var(--font-body);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    transform: translateY(-1.6em);
   }
   .rot__word[aria-pressed='true'] {
     color: var(--fucinho);
@@ -255,9 +245,6 @@ const looks = [
     :global(.js) .rot__word .rot__label,
     :global(.js) .rot__word[aria-pressed='true'] .rot__label {
       background: none;
-    }
-    :global(.js) .rot__num {
-      display: none;
     }
     :global(.js) .rot__visual {
       max-height: 50svh;

@@ -1,0 +1,331 @@
+---
+import { comoFunciona as cf, club } from '../content/copy';
+// Os nomes e frases dos planos vêm dos próprios cards da seção O Club.
+const vilas = club.plans;
+const defaultCycle = cf.cycles[0];
+const caption = (n: number) => cf.cycleCaption.replaceAll('{n}', String(n));
+---
+
+<section class="how" id="como-funciona" aria-labelledby="how-title" data-how data-cycle={defaultCycle}>
+  <div class="wrap">
+    <div class="how__head">
+      <h2 id="how-title" class="how__title" data-reveal>{cf.headline}</h2>
+      <p class="how__intro" data-reveal style="--reveal-i:1">{cf.intro}</p>
+    </div>
+
+    <ol class="how__steps" role="list">
+      <li class="how__step" data-reveal data-how-step>
+        <h3 class="how__name">{cf.steps.vila.title}</h3>
+        <div class="how__body">
+          <p class="how__copy">{cf.steps.vila.copy}</p>
+          <ul class="how__vilas" role="list">
+            {vilas.map((p) => (
+              <li>
+                <a href={`#vila-${p.id}`} class={`how__vila ${p.core ? 'how__vila--core' : ''}`}>
+                  <span class="how__vila-name">{p.name}</span>
+                  <span class="how__vila-tag">{p.tagline}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </li>
+
+      <li class="how__step" data-reveal data-how-step>
+        <h3 class="how__name">{cf.steps.ciclo.title}</h3>
+        <div class="how__body">
+          <p class="how__copy">{cf.steps.ciclo.copy}</p>
+          <div class="how__cycles" role="group" aria-label={cf.cycleGroupLabel}>
+            {cf.cycles.map((n) => (
+              <button type="button" class="how__cycle" data-cycle-btn={n} aria-pressed={n === defaultCycle ? 'true' : 'false'}>
+                <span class="how__cycle-n">{n}</span>
+                <span class="how__cycle-unit">{cf.cycleUnit}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </li>
+
+      <li class="how__step" data-reveal data-how-step>
+        <h3 class="how__name">{cf.steps.mensal.title}</h3>
+        <div class="how__body">
+          <p class="how__copy">{cf.steps.mensal.copy}</p>
+          <div class="how__months" aria-hidden="true">
+            {Array.from({ length: 12 }, (_, i) => (
+              <span class="how__box" style={`--i:${i}`}><span class="how__lid"></span></span>
+            ))}
+          </div>
+          <p class="how__caption" aria-live="polite" data-cycle-caption data-template={cf.cycleCaption}>{caption(defaultCycle)}</p>
+        </div>
+      </li>
+
+      <li class="how__step" data-reveal data-how-step>
+        <h3 class="how__name">{cf.steps.club.title}</h3>
+        <div class="how__body">
+          <p class="how__copy">{cf.steps.club.copy}</p>
+          <a href="#petvila-store" class="how__more">
+            {cf.steps.club.link}
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M5 12h13M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+          </a>
+        </div>
+      </li>
+    </ol>
+
+    <p class="how__closing" data-reveal>{cf.closing}</p>
+  </div>
+</section>
+
+<style>
+  .how {
+    /* A Curadoria já termina com o respiro de uma seção; somar outro aqui abria um vão duplo. */
+    padding-block: 0;
+  }
+  .how__head {
+    display: grid;
+    gap: 1.25rem;
+    margin-bottom: clamp(2.5rem, 6vw, 5rem);
+  }
+  .how__title {
+    font-size: var(--step-4);
+    max-width: 11ch;
+  }
+  .how__intro {
+    font-size: var(--step-1);
+    max-width: 36ch;
+    color: var(--ink-soft);
+  }
+
+  .how__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .how__step {
+    display: grid;
+    gap: 1rem;
+    padding-block: clamp(1.75rem, 4vw, 2.75rem);
+  }
+  .how__name {
+    position: relative;
+    font-size: var(--step-3);
+    transition: color 500ms ease;
+  }
+  /* Com JS, o passo no centro da tela fica em destaque e os outros recuam: a ordem se lê sem números. */
+  :global(.js) .how__step:not(.is-current) .how__name {
+    color: color-mix(in srgb, var(--fucinho) 30%, transparent);
+  }
+  .how__name::before {
+    content: '';
+    position: absolute;
+    left: calc(-0.32em - 0.4rem);
+    top: 0.32em;
+    width: 0.32em;
+    height: 0.32em;
+    border-radius: 50% 50% 50% 0;
+    background: var(--patinha);
+    transform: rotate(-45deg) scale(0);
+    transition: transform 600ms var(--ease-spring);
+  }
+  :global(.js) .how__step.is-current .how__name::before {
+    transform: rotate(-45deg) scale(1);
+  }
+  .how__body {
+    display: grid;
+    gap: 1.25rem;
+    align-content: start;
+  }
+  .how__copy {
+    font-size: var(--step-1);
+    max-width: 32ch;
+  }
+
+  /* Escolha sua Vila: as duas Vilas como no card (Care em Terra). */
+  .how__vilas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .how__vila {
+    display: grid;
+    gap: 0.2rem;
+    padding: 1rem 1.4rem;
+    border-radius: calc(var(--radius) * 0.75);
+    border: 1.5px solid var(--fucinho);
+    background: color-mix(in srgb, var(--terra) 8%, var(--chamego));
+    text-decoration: none;
+    transition:
+      transform 500ms var(--ease-out),
+      background-color 300ms ease;
+  }
+  .how__vila--core {
+    background: var(--terra);
+    border-color: var(--terra);
+    color: var(--chamego);
+  }
+  .how__vila-name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .how__vila-tag {
+    font-size: var(--step--1);
+  }
+  .how__vila:hover,
+  .how__vila:focus-visible {
+    transform: translateY(-3px) rotate(-1deg);
+  }
+  .how__vila--core:focus-visible {
+    outline-color: var(--fucinho);
+  }
+
+  /* Escolha seu ciclo */
+  .how__cycles {
+    display: flex;
+    gap: 0.5rem;
+    max-width: 26rem;
+  }
+  .how__cycle {
+    flex: 1 1 0;
+    display: inline-flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.35rem;
+    min-height: 3.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--fucinho);
+    background: transparent;
+    transition:
+      background-color 300ms ease,
+      color 300ms ease,
+      transform 500ms var(--ease-spring);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .how__cycle-n {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--step-2);
+    line-height: 1;
+  }
+  .how__cycle-unit {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .how__cycle[aria-pressed='true'] {
+    background: var(--fucinho);
+    color: var(--chamego);
+  }
+  .how__cycle:active {
+    transform: scale(0.96);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .how__cycle[aria-pressed='false']:hover {
+      background: color-mix(in srgb, var(--patinha) 22%, transparent);
+    }
+  }
+
+  /* Receba todos os meses: uma caixa por mês; o ciclo escolhido acende 3, 6 ou 12. */
+  .how__months {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 3.25rem));
+    gap: 0.6rem;
+  }
+  .how__box {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 0.6rem;
+    background: color-mix(in srgb, var(--fucinho) 10%, transparent);
+    scale: 0.82;
+    transition:
+      background-color 300ms ease,
+      scale 600ms var(--ease-spring);
+  }
+  .how__lid {
+    position: absolute;
+    inset: -8% -6% auto;
+    height: 30%;
+    border-radius: 0.45rem;
+    background: color-mix(in srgb, var(--fucinho) 12%, transparent);
+    transition:
+      background-color 300ms ease,
+      translate 600ms var(--ease-spring);
+  }
+  .how[data-cycle='3'] .how__box:nth-child(-n + 3),
+  .how[data-cycle='6'] .how__box:nth-child(-n + 6),
+  .how[data-cycle='12'] .how__box {
+    background: var(--patinha);
+    scale: 1;
+    transition-delay: calc(var(--i) * 45ms);
+  }
+  .how[data-cycle='3'] .how__box:nth-child(-n + 3) .how__lid,
+  .how[data-cycle='6'] .how__box:nth-child(-n + 6) .how__lid,
+  .how[data-cycle='12'] .how__box .how__lid {
+    background: var(--fucinho);
+    translate: 0 -12%;
+    transition-delay: calc(var(--i) * 45ms + 120ms);
+  }
+  /* Primeira aparição: as caixas entram uma a uma. */
+  :global(.motion) [data-reveal]:not(.is-in) .how__box {
+    scale: 0.4;
+  }
+  .how__caption {
+    font-size: var(--step-0);
+    font-weight: 600;
+  }
+
+  .how__more {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    text-decoration: none;
+    background: linear-gradient(var(--patinha), var(--patinha)) 0 100% / 100% 2px no-repeat;
+    padding-block: 0.25rem;
+  }
+  .how__more svg {
+    transition: transform 400ms var(--ease-out);
+  }
+  .how__more:hover svg,
+  .how__more:focus-visible svg {
+    transform: translateX(4px);
+  }
+
+  .how__closing {
+    margin-top: clamp(2rem, 5vw, 4rem);
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    max-width: 30ch;
+    margin-left: auto;
+  }
+
+  @media (min-width: 640px) {
+    .how__vilas {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 960px) {
+    .how__head {
+      grid-template-columns: 1.3fr 1fr;
+      align-items: end;
+    }
+    .how__step {
+      grid-template-columns: 1fr 1.15fr;
+      column-gap: 3rem;
+      align-items: start;
+    }
+    .how__months {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+    }
+  }
+</style>

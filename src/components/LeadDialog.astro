@@ -1,12 +1,14 @@
 ---
 /**
- * Cadastro "Primeiros da Vila" em 5 etapas, num <dialog> nativo
+ * Cadastro "Primeiros da Vila" em 6 etapas, num <dialog> nativo
  * (foco preso, Esc fecha, acessível sem biblioteca).
+ * A etapa do plano (data-plan-step) é pulada quando o cadastro foi aberto pelo
+ * botão de um card de plano: o clique já informou o plano de interesse.
  */
-import { form, ufs } from '../content/copy';
+import { club, form, ufs } from '../content/copy';
 import { site } from '../config/site';
 const s = form.steps;
-const total = 5;
+const total = 6;
 ---
 
 <dialog class="lead" data-lead aria-labelledby="lead-heading">
@@ -108,7 +110,31 @@ const total = 5;
         <p class="lead__err" data-err="uf" aria-live="polite"></p>
       </fieldset>
 
-      <fieldset class="lead__step" data-step="4" data-fields="consentimento" hidden>
+      <fieldset class="lead__step" data-step="4" data-fields="preferredPlan" data-plan-step hidden>
+        <legend class="lead__q">{s.plan.title}</legend>
+        <p class="lead__hint">{s.plan.hint}</p>
+        <div class="lead__plans" role="radiogroup" aria-label={s.plan.title}>
+          {form.plans.map((o) => (
+            <label class="plan-opt">
+              <input type="radio" name="preferredPlan" value={o.value} required />
+              <span class="plan-opt__name">{o.label}</span>
+              <span class="plan-opt__copy">{o.copy}</span>
+              {o.count && (
+                <span class="plan-opt__details">
+                  <span class="plan-opt__count"><strong>{o.count}</strong> {club.perMonth}</span>
+                  <span class="plan-opt__items">{o.items.map((item) => <span>{item}</span>)}</span>
+                  {o.originals && (
+                    <span class="plan-opt__originals"><strong>{o.originals.title}</strong> {o.originals.copy}</span>
+                  )}
+                </span>
+              )}
+            </label>
+          ))}
+        </div>
+        <p class="lead__err" data-err="preferredPlan" aria-live="polite"></p>
+      </fieldset>
+
+      <fieldset class="lead__step" data-step="5" data-fields="consentimento" hidden>
         <legend class="lead__q" data-dog-template={s.interests.title}>{s.interests.title.replace('{dog}', 'seu cão')}</legend>
         <p class="lead__hint">{s.interests.hint}</p>
         <div class="lead__chips">
@@ -122,11 +148,15 @@ const total = 5;
         <label class="lead__consent">
           <input type="checkbox" name="consentimento" required />
           <span>
-            Quero receber novidades da PetVila Club por e-mail e WhatsApp. Li e concordo com a{' '}
+            Quero receber novidades da PetVila Club por e-mail. Li e concordo com a{' '}
             <a href="/privacidade" target="_blank" rel="noopener">Política de Privacidade</a>.
           </span>
         </label>
         <p class="lead__err" data-err="consentimento" aria-live="polite"></p>
+        <label class="lead__consent lead__consent--opt">
+          <input type="checkbox" name="whatsapp_opt_in" />
+          <span>{form.whatsappOptInText}</span>
+        </label>
       </fieldset>
 
       <!-- Honeypot anti-spam: invisível para pessoas. -->
@@ -409,6 +439,126 @@ const total = 5;
   .chip--size[data-size='pequeno'] { --s: 0.55rem; }
   .chip--size[data-size='medio'] { --s: 0.8rem; }
   .chip--size[data-size='grande'] { --s: 1.1rem; }
+  .lead__plans {
+    display: grid;
+    gap: 0.6rem;
+  }
+  @media (min-width: 760px) {
+    .lead__plans {
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+    }
+    .plan-opt:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+  .plan-opt {
+    position: relative;
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.9rem 1.15rem 0.9rem 3.1rem;
+    border: 1.5px solid var(--fucinho);
+    border-radius: 1.25rem;
+    cursor: pointer;
+    user-select: none;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease,
+      transform 300ms var(--ease-spring);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .plan-opt::before {
+    content: '';
+    position: absolute;
+    left: 1.15rem;
+    top: 1.15rem;
+    width: 1.1rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1.5px solid currentColor;
+    transition: background-color 200ms ease, box-shadow 200ms ease;
+  }
+  .plan-opt input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+  .plan-opt__name {
+    font-weight: 700;
+    font-size: var(--step-1);
+    line-height: 1.15;
+  }
+  .plan-opt__copy {
+    font-size: var(--step--1);
+    color: var(--ink-soft);
+  }
+  .plan-opt:has(input:checked) {
+    background: var(--fucinho);
+    color: var(--chamego);
+  }
+  .plan-opt__details {
+    display: grid;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    font-size: var(--step--1);
+    line-height: 1.35;
+  }
+  .plan-opt__count {
+    font-weight: 600;
+  }
+  .plan-opt__count strong {
+    color: var(--terra);
+  }
+  .plan-opt__items {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .plan-opt__items span {
+    position: relative;
+    padding-left: 1rem;
+  }
+  .plan-opt__items span::before {
+    content: '';
+    position: absolute;
+    left: 0.1rem;
+    top: 0.5em;
+    width: 0.45rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--patinha);
+  }
+  .plan-opt__originals {
+    padding-top: 0.4rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 20%, transparent);
+    color: var(--ink-soft);
+  }
+  .plan-opt:has(input:checked) .plan-opt__count strong {
+    color: var(--patinha);
+  }
+  .plan-opt:has(input:checked) .plan-opt__originals {
+    color: inherit;
+  }
+  .plan-opt:has(input:checked) .plan-opt__copy {
+    color: inherit;
+    opacity: 0.85;
+  }
+  .plan-opt:has(input:checked)::before {
+    background: var(--patinha);
+    border-color: var(--patinha);
+    box-shadow: inset 0 0 0 3px var(--fucinho);
+  }
+  .plan-opt:has(input:focus-visible) {
+    outline: 3px solid var(--patinha);
+    outline-offset: 3px;
+  }
+  .plan-opt:has(input[aria-invalid='true']) {
+    border-color: #a3220b;
+  }
+  .plan-opt:active {
+    transform: scale(0.98);
+  }
   .lead__more summary {
     cursor: pointer;
     font-weight: 600;
@@ -428,6 +578,9 @@ const total = 5;
     font-size: var(--step--1);
     line-height: 1.45;
     cursor: pointer;
+  }
+  .lead__consent--opt {
+    margin-top: 0.25rem;
   }
   .lead__consent input {
     width: 1.35rem;

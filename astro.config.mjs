@@ -7,7 +7,7 @@ const site = process.env.PUBLIC_SITE_URL || 'https://petvilaclub.com.br';
 
 export default defineConfig({
   site,
-  // Página estática; só /api/leads roda sob demanda (prerender = false).
+  // Página estática; só as rotas de /api e /crm rodam sob demanda (prerender = false).
   output: 'static',
   adapter: vercel({ webAnalytics: { enabled: false } }),
   trailingSlash: 'never',
