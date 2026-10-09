@@ -65,8 +65,18 @@ const form = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
-const postLead = (body: Record<string, unknown>) =>
-  leadsApi.POST(ctx(new Request('https://petvilaclub.com.br/api/leads', { method: 'POST', body: JSON.stringify(body) })));
+// Um IP por envio: o limite por IP de /api/leads é testado à parte.
+let ipSeq = 0;
+const postLead = (body: Record<string, unknown>, headers: Record<string, string> = {}) =>
+  leadsApi.POST(
+    ctx(
+      new Request('https://petvilaclub.com.br/api/leads', {
+        method: 'POST',
+        body: JSON.stringify(body),
+        headers: { 'content-type': 'application/json', 'x-real-ip': `10.0.0.${++ipSeq}`, ...headers },
+      }),
+    ),
+  );
 
 const allLeads = () => getLeadStore()!.list!();
 
@@ -143,6 +153,15 @@ describe('POST /api/leads', () => {
     expect(await res.json()).toEqual({ ok: true });
     await settle();
     expect((await allLeads())[0]).toMatchObject({ welcome_message_status: 'failed', welcome_error_code: '100' });
+  });
+
+  it('recusa corpo que não é JSON, corpo grande demais e envios em excesso do mesmo IP', async () => {
+    vi.stubEnv('WHATSAPP_ENABLED', 'false');
+    expect((await postLead(form(), { 'content-type': 'text/plain' })).status).toBe(415);
+    expect((await postLead(form({ nome: 'a'.repeat(20 * 1024) }))).status).toBe(413);
+    const ip = { 'x-real-ip': '10.9.9.9' };
+    for (let i = 0; i < 10; i++) expect((await postLead(form(), ip)).status).toBe(201);
+    expect((await postLead(form(), ip)).status).toBe(429);
   });
 });
 

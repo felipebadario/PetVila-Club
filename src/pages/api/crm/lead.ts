@@ -5,7 +5,7 @@ import { getLeadStore, LEAD_STATUSES, type LeadStatus } from '../../../lib/leads
 export const prerender = false;
 
 const json = (status: number, body: unknown) =>
-  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json' } });
+  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 
 /** Atualiza status e/ou nota de um lead. */
 export const POST: APIRoute = async ({ request, cookies }) => {

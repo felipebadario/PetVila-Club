@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { waitUntil } from '@vercel/functions';
 import { LEAD_SOURCE, validateLead, type StoredLead } from '../../lib/leads/schema';
 import { getLeadStore } from '../../lib/leads/store';
+import { clientIp, hit } from '../../lib/security/rate-limit';
 import { toWhatsAppNumber } from '../../lib/whatsapp/phone';
 import { sendWelcome } from '../../lib/whatsapp/welcome';
 
@@ -17,7 +18,13 @@ const cors = (request: Request): Record<string, string> => {
 };
 
 const json = (status: number, body: unknown, extra: Record<string, string> = {}) =>
-  new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', ...extra } });
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...extra },
+  });
+
+// Um cadastro tem poucos KB; acima disso é abuso.
+const MAX_BYTES = 16 * 1024;
 
 export const OPTIONS: APIRoute = ({ request }) =>
   new Response(null, {
@@ -27,9 +34,19 @@ export const OPTIONS: APIRoute = ({ request }) =>
 
 export const POST: APIRoute = async ({ request }) => {
   const send = (status: number, body: unknown) => json(status, body, cors(request));
+  // Só JSON: obriga o navegador a fazer preflight em envios de outros sites.
+  if (!(request.headers.get('content-type') || '').toLowerCase().startsWith('application/json'))
+    return send(415, { message: 'Requisição inválida.' });
+  if (Number(request.headers.get('content-length') || 0) > MAX_BYTES) return send(413, { message: 'Requisição inválida.' });
+  if (!hit('leads', clientIp(request), 10, 10 * 60 * 1000))
+    return send(429, { message: 'Recebemos muitos envios daqui. Tenta de novo em alguns minutos?' });
+
   let input: Record<string, unknown>;
   try {
-    input = await request.json();
+    const raw = await request.text();
+    if (raw.length > MAX_BYTES) return send(413, { message: 'Requisição inválida.' });
+    input = JSON.parse(raw);
+    if (!input || typeof input !== 'object' || Array.isArray(input)) throw new Error('not_object');
   } catch {
     return send(400, { message: 'Requisição inválida.' });
   }
