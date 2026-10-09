@@ -5,26 +5,55 @@
  * 2. Webhook genérico (LEADS_WEBHOOK_URL): só grava (CRM fica indisponível).
  * 3. Desenvolvimento sem nada configurado: arquivo .data/leads.jsonl.
  * Para trocar por um CRM de verdade depois, implemente LeadStore e ajuste getLeadStore().
+ *
+ * Os campos welcome_* (boas-vindas pelo WhatsApp) moram nas mesmas linhas do lead.
+ * Só a planilha e o arquivo local sabem gravá-los; sem eles nenhum envio acontece.
  */
 import type { StoredLead } from './schema';
+import {
+  WELCOME_FIELDS,
+  hasActiveWelcome,
+  mergeWelcomeStatus,
+  type StatusUpdate,
+  type WelcomeFields,
+  type WelcomePatch,
+} from '../whatsapp/status';
 
 export const LEAD_STATUSES = ['novo', 'contatado', 'qualificado', 'descartado'] as const;
 export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
-export type CrmLead = StoredLead & { status: LeadStatus | string; nota: string; atualizado_em: string };
+export type CrmLead = StoredLead &
+  Partial<WelcomeFields> & { status: LeadStatus | string; nota: string; atualizado_em: string };
+
+export type StatusResult = 'updated' | 'unchanged' | 'not_found';
 
 export interface LeadStore {
   save(lead: StoredLead): Promise<void>;
   list?(): Promise<CrmLead[]>;
   update?(id: string, patch: { status?: LeadStatus; nota?: string }): Promise<void>;
+  /** Remove o lead da base (limpeza de cadastros de teste). Lança 'not_found' se não existir. */
+  remove?(id: string): Promise<void>;
+  /**
+   * Idempotência das boas-vindas, atômica na base: reserva o envio para o lead
+   * (status "sending") só se ele ainda não tiver status e se nenhum outro lead
+   * com o mesmo número tiver boas-vindas em andamento ou entregue.
+   */
+  claimWelcome?(id: string, phone: string): Promise<boolean>;
+  /** Grava o resultado do envio (wamid, status, erro) no lead. */
+  recordWelcome?(id: string, patch: WelcomePatch): Promise<void>;
+  /** Aplica um status do webhook ao lead que tem esse wamid. */
+  applyWelcomeStatus?(update: StatusUpdate): Promise<StatusResult>;
 }
+
+const pickWelcome = (patch: WelcomePatch): WelcomePatch =>
+  Object.fromEntries(WELCOME_FIELDS.filter((k) => patch[k] !== undefined).map((k) => [k, String(patch[k])]));
 
 const env = (k: string) => process.env[k] || (import.meta.env as Record<string, string | undefined>)[k] || '';
 
 class SheetsStore implements LeadStore {
   constructor(private url: string, private token: string) {}
 
-  private async post(body: Record<string, unknown>) {
+  private async post(body: Record<string, unknown>): Promise<Record<string, unknown>> {
     const res = await fetch(this.url, {
       method: 'POST',
       headers: { 'content-type': 'text/plain;charset=utf-8' }, // Apps Script lê o corpo cru
@@ -34,10 +63,11 @@ class SheetsStore implements LeadStore {
     });
     const out = await res.json().catch(() => ({ ok: false, error: `http_${res.status}` }));
     if (!out.ok) throw new Error(`planilha: ${out.error}`);
+    return out;
   }
 
-  save(lead: StoredLead) {
-    return this.post({ action: 'append', lead });
+  async save(lead: StoredLead) {
+    await this.post({ action: 'append', lead });
   }
 
   async list() {
@@ -64,8 +94,28 @@ class SheetsStore implements LeadStore {
     return res.json();
   }
 
-  update(id: string, patch: { status?: LeadStatus; nota?: string }) {
-    return this.post({ action: 'update', id, ...patch });
+  async update(id: string, patch: { status?: LeadStatus; nota?: string }) {
+    await this.post({ action: 'update', id, ...patch });
+  }
+
+  // Exige a versão do Code.gs com a ação delete; a anterior responde unknown_action.
+  async remove(id: string) {
+    await this.post({ action: 'delete', id });
+  }
+
+  // Exigem a versão do Code.gs com welcome_*; a anterior responde unknown_action (erro).
+  async claimWelcome(id: string, phone: string) {
+    const out = await this.post({ action: 'welcome_claim', id, phone });
+    return out.claimed === true;
+  }
+
+  async recordWelcome(id: string, patch: WelcomePatch) {
+    await this.post({ action: 'welcome_record', id, patch: pickWelcome(patch) });
+  }
+
+  async applyWelcomeStatus(update: StatusUpdate) {
+    const out = await this.post({ action: 'welcome_status', update });
+    return (out.result as StatusResult) || 'unchanged';
   }
 }
 
@@ -116,6 +166,37 @@ class LocalFileStore implements LeadStore {
     if (patch.nota !== undefined) l.nota = patch.nota;
     l.atualizado_em = new Date().toISOString();
     await this.write(all);
+  }
+  async remove(id: string) {
+    const all = await this.read();
+    const rest = all.filter((x) => x.id !== id);
+    if (rest.length === all.length) throw new Error('not_found');
+    await this.write(rest);
+  }
+  async claimWelcome(id: string, phone: string) {
+    const all = await this.read();
+    const l = all.find((x) => x.id === id);
+    if (!l || l.welcome_message_status || all.some((x) => hasActiveWelcome(x, phone))) return false;
+    l.welcome_message_status = 'sending';
+    await this.write(all);
+    return true;
+  }
+  async recordWelcome(id: string, patch: WelcomePatch) {
+    const all = await this.read();
+    const l = all.find((x) => x.id === id);
+    if (!l) throw new Error('not_found');
+    Object.assign(l, pickWelcome(patch));
+    await this.write(all);
+  }
+  async applyWelcomeStatus(update: StatusUpdate): Promise<StatusResult> {
+    const all = await this.read();
+    const l = all.find((x) => x.welcome_message_id === update.wamid);
+    if (!l) return 'not_found';
+    const patch = mergeWelcomeStatus(l, update);
+    if (!Object.keys(patch).length) return 'unchanged';
+    Object.assign(l, patch);
+    await this.write(all);
+    return 'updated';
   }
 }
 

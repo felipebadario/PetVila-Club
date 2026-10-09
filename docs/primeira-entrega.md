@@ -134,9 +134,9 @@ As fotos entram pelo componente `<Image>` do Astro (gera WebP/AVIF e tamanhos re
 
 1. ~~Destino dos leads~~ **Decidido**: planilha Google + CRM próprio em `/crm` (ver seção 12). Sem a planilha configurada, o formulário em produção responde "indisponível" de propósito para não perder leads em silêncio.
 2. ~~Hospedagem~~ **Decidido**: Vercel.
-3. **Instagram oficial** (@) e **e-mail de contato**: links ficam ocultos até preencher `src/config/site.ts`.
-4. **Razão social e CNPJ** para rodapé e Política de Privacidade.
-5. **Política de Privacidade e Termos**: há um rascunho estrutural marcado como pendente de revisão jurídica. Faltam controlador, encarregado (DPO), operadores e prazo de retenção.
+3. ~~Instagram oficial e e-mail de contato~~ **Decidido**: @petvilaclub e contato@petvilaclub.com, em `src/config/site.ts`.
+4. ~~Razão social e CNPJ~~ **Decidido**: Pet Vila Club LTDA, CNPJ 69.194.320/0001-26 (rodapé, Política e Termos).
+5. **Política de Privacidade e Termos**: redigidos em 06/10/2026 com controlador, operadores e direitos do titular, refletindo o código atual. Falta revisão jurídica. Se GA4 ou Meta Pixel forem ativados, a Política precisa ser atualizada antes.
 6. **Banner de cookies / consentimento para GA4 e Meta Pixel**: os scripts só carregam com os IDs definidos e em produção; recomendo ativar junto com um banner.
 7. **Consentimento**: hoje é um único checkbox obrigatório (e-mail + WhatsApp + política). Se quiser WhatsApp opcional separado, é rápido mudar.
 8. **Microcopy dos 5 momentos e frase de apoio "Entrar não é comprar nem assinar nada"**: propostas minhas para revisão.
@@ -144,7 +144,7 @@ As fotos entram pelo componente `<Image>` do Astro (gera WebP/AVIF e tamanhos re
 
 ## 10. Dados do cadastro
 
-Cada lead é gravado com: `id`, `criado_em` (UTC, carimbo do servidor), `nome`, `email`, `whatsapp` (só dígitos), `nome_cao`, `porte`, `idade_faixa`, `nascimento`, `cidade`, `uf`, `interesses[]`, `consentimento`, `consentimento_versao`, `consentimento_texto`, `cta_origem` (qual botão gerou o lead), `utm_source/medium/campaign/content/term`, `referrer`, `landing_page`. Há honeypot anti-spam.
+Cada lead é gravado com: `id`, `criado_em` (UTC, carimbo do servidor), `nome`, `email`, `whatsapp` (só dígitos), `nome_cao`, `porte`, `idade_faixa`, `nascimento`, `cidade`, `uf`, `interesses[]`, `preferredPlan` (plano de interesse: `essential`, `care` ou `undecided`; vem do botão do card do plano ou, nos demais botões, da pergunta no formulário; vazio nos leads anteriores ao campo), `consentimento`, `consentimento_versao`, `consentimento_texto`, `cta_origem` (qual botão gerou o lead), `utm_source/medium/campaign/content/term`, `referrer`, `landing_page`. Há honeypot anti-spam.
 
 Eventos de tracking já emitidos (para `dataLayer`, GA4 e Meta quando ativos): `cta_click`, `lead_form_open`, `lead_step_complete`, `lead_form_close`, `lead_submit_error`, `generate_lead` (vira `Lead` no Meta), `rotina_moment`, `section_view`, `instagram_click`.
 

@@ -1,5 +1,5 @@
 ---
-import Placeholder from './Placeholder.astro';
+import BrandArt from './BrandArt.astro';
 import { manifesto } from '../content/copy';
 const full = manifesto.lines.join(' ');
 const lines = manifesto.lines.map((l) => l.split(' '));
@@ -8,23 +8,21 @@ const closing = manifesto.closing.split(/(Vila)/);
 ---
 
 <section class="man section-dark" aria-label="Manifesto" data-manifesto>
-  <div class="man__track">
-    <div class="man__sticky wrap">
-      <p class="man__text" aria-label={full}>
-        {lines.map((words) => (
-          <span class="man__line" aria-hidden="true">
-            {words.map((w) => <span class="man__w" style={`--k:${k++}`}>{w} </span>)}
-          </span>
-        ))}
-      </p>
-      <p class="man__closing" data-closing>
-        {closing.map((part) => (part === 'Vila' ? <em>Vila</em> : part))}
-      </p>
-    </div>
+  <div class="man__body wrap">
+    <p class="man__text" aria-label={full}>
+      {lines.map((words) => (
+        <span class="man__line" aria-hidden="true">
+          {words.map((w) => <span class="man__w" style={`--k:${k++}`}>{w} </span>)}
+        </span>
+      ))}
+    </p>
+    <p class="man__closing" data-closing>
+      {closing.map((part) => (part === 'Vila' ? <em>Vila</em> : part))}
+    </p>
   </div>
-  <!-- A Vila: ilustração horizontal da marca nascendo na base da seção. -->
+  <!-- A Vila: fileira de casinhas mais larga que a tela, que desliza para a esquerda enquanto passa pela tela. -->
   <div class="man__village" aria-hidden="true">
-    <Placeholder kind="ilustração" label="a Vila (panorama)" tone="patinha" shape="pill" class="man__village-ph" />
+    <BrandArt art="vila" class="man__village-art" />
   </div>
 </section>
 
@@ -35,18 +33,13 @@ const closing = manifesto.closing.split(/(Vila)/);
     color: var(--chamego);
     overflow: clip;
   }
-  .man__track {
-    height: 220svh;
-  }
-  .man__sticky {
-    position: sticky;
-    top: 0;
-    min-height: 100svh;
+  /* Sem trava: o texto rola livre e as palavras acendem conforme sobem pela tela. */
+  .man__body {
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: clamp(2rem, 6vw, 4rem);
-    padding-block: 5rem;
+    padding-block: clamp(6rem, 18svh, 10rem) clamp(4rem, 12svh, 7rem);
   }
   .man__text {
     font-family: var(--font-display);
@@ -91,21 +84,25 @@ const closing = manifesto.closing.split(/(Vila)/);
     font-style: normal;
     color: var(--patinha);
   }
+  /* Fica no fluxo, abaixo do texto: assim nunca cobre a frase. */
   .man__village {
-    position: absolute;
-    left: var(--gutter);
-    right: var(--gutter);
-    bottom: 0;
-    height: 9rem;
-    translate: 0 calc((1 - var(--v, 1)) * 100%);
+    height: clamp(6rem, 15vw, 13.75rem);
+    overflow: hidden;
   }
-  :global(.man__village-ph) {
-    width: 100%;
+  /* A faixa mantém a proporção do SVG e desliza da direita para a esquerda (--x vem do scroll). */
+  .man__village :global(.man__village-art) {
     height: 100%;
-    border-radius: 999px 999px 0 0 !important;
+    width: max-content;
+    transform: translate3d(var(--x, 0px), 0, 0);
+    will-change: transform;
+  }
+  .man__village :global(.man__village-art svg) {
+    display: block;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 2880 / 220;
   }
   @media (max-width: 759px) {
     .man__text { font-size: clamp(2.3rem, 10.5vw, 3.4rem); }
-    .man__village { height: 5rem; }
   }
 </style>

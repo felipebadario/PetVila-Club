@@ -1,16 +1,21 @@
 ---
-/** CTA principal. Abre o cadastro "Primeiros da Vila"; `origin` identifica de onde veio. */
+/**
+ * CTA principal. Abre o cadastro "Primeiros da Vila"; `origin` identifica de onde veio.
+ * `plan` só nos botões dos cards de plano: já registra o plano de interesse e o
+ * formulário não pergunta de novo. CTAs genéricos não passam `plan`.
+ */
 import { cta } from '../content/copy';
 interface Props {
   origin: string;
+  plan?: 'essential' | 'care';
   label?: string;
   size?: 'md' | 'lg';
   class?: string;
 }
-const { origin, label = cta.primary, size = 'lg', class: cls = '' } = Astro.props;
+const { origin, plan, label = cta.primary, size = 'lg', class: cls = '' } = Astro.props;
 ---
 
-<button type="button" class={`cta cta--${size} ${cls}`} data-open-lead={origin} data-magnetic aria-haspopup="dialog">
+<button type="button" class={`cta cta--${size} ${cls}`} data-open-lead={origin} data-lead-plan={plan} data-magnetic aria-haspopup="dialog">
   <span class="cta__label">{label}</span>
   <span class="cta__dot" aria-hidden="true">
     <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 12h13M12 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" /></svg>

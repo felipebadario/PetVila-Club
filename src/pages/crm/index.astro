@@ -1,6 +1,6 @@
 ---
 /**
- * CRM dos Primeiros da Vila: lista, filtros, indicadores, status e notas.
+ * CRM dos Primeiros da Vila: lista, filtros, indicadores, status, notas e exclusão.
  * Lê a mesma planilha que recebe os cadastros. Protegido por senha (CRM_PASSWORD).
  */
 import '../../styles/global.css';
@@ -125,7 +125,7 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
           <table class="tbl">
             <thead>
               <tr>
-                <th>Data</th><th>Tutor</th><th>Cão</th><th>Contato</th><th>Cidade</th><th>Interesses</th><th>Origem</th><th>Status</th><th>Nota</th>
+                <th>Data</th><th>Tutor</th><th>Cão</th><th>Contato</th><th>Cidade</th><th>Interesses</th><th>Plano</th><th>Origem</th><th>Status</th><th>Nota</th><th><span class="visually-hidden">Excluir</span></th>
               </tr>
             </thead>
             <tbody data-rows></tbody>
@@ -133,6 +133,17 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
           <p class="empty" data-empty hidden>Nenhum lead com esses filtros.</p>
         </div>
         <p class="toast" data-toast role="status" aria-live="polite"></p>
+        <dialog class="confirm" data-del-dialog aria-labelledby="del-title">
+          <form method="dialog">
+            <h2 id="del-title">Excluir este cadastro?</h2>
+            <p class="confirm__who" data-del-who></p>
+            <p>A linha sai da planilha e do CRM. Não dá para desfazer.</p>
+            <div class="confirm__actions">
+              <button class="btn btn--ghost" value="cancel" autofocus>Cancelar</button>
+              <button type="button" class="btn btn--danger" data-del-confirm>Excluir</button>
+            </div>
+          </form>
+        </dialog>
       </div>
     )}
 
@@ -292,7 +303,7 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
   .filters__count { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
 
   .table-wrap { overflow-x: auto; border: 1.5px solid var(--fucinho); border-radius: 1.25rem; }
-  .tbl { width: 100%; border-collapse: collapse; min-width: 68rem; }
+  .tbl { width: 100%; border-collapse: collapse; min-width: 74rem; }
   .tbl th {
     text-align: left;
     font-size: 0.72rem;
@@ -314,6 +325,19 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
     font-size: 0.75rem;
     background: color-mix(in srgb, var(--terra) 10%, var(--chamego));
   }
+  .plan-tag {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    white-space: nowrap;
+    background: color-mix(in srgb, var(--fucinho) 8%, var(--chamego));
+  }
+  .plan-tag[data-plan='essential'] { background: color-mix(in srgb, var(--terra) 15%, var(--chamego)); }
+  .plan-tag[data-plan='care'] { background: var(--terra); color: var(--chamego); }
+  .plan-tag[data-plan='undecided'] { background: var(--patinha); color: var(--fucinho); }
+  .plan-tag[data-plan=''] { background: transparent; color: var(--ink-soft); font-weight: 600; }
   .tbl select {
     min-height: 2.25rem;
     border-radius: 999px;
@@ -336,6 +360,34 @@ const payload = JSON.stringify({ leads, labels, statuses: LEAD_STATUSES }).repla
     resize: vertical;
     font-size: 0.85rem;
   }
+  .del {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .del:hover,
+  .del:focus-visible { background: color-mix(in srgb, #8c1d07 10%, transparent); color: #8c1d07; }
+  .confirm {
+    width: min(26rem, calc(100% - 2rem));
+    padding: 1.75rem;
+    border: 1.5px solid var(--fucinho);
+    border-radius: 1.5rem;
+    background: var(--chamego);
+    color: inherit;
+  }
+  .confirm::backdrop { background: color-mix(in srgb, var(--fucinho) 45%, transparent); }
+  .confirm h2 { font-size: 1.4rem; margin-bottom: 0.75rem; }
+  .confirm p { margin: 0 0 0.6rem; }
+  .confirm__who { font-weight: 700; overflow-wrap: anywhere; }
+  .confirm__actions { display: flex; justify-content: end; gap: 0.5rem; margin-top: 1.25rem; }
+  .btn--danger { background: #8c1d07; color: #fff; }
+  .btn--danger:disabled { opacity: 0.6; }
   .empty { padding: 2rem; text-align: center; }
   .toast {
     position: fixed;

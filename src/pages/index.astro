@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
 import Rotina from '../components/Rotina.astro';
 import Curadoria from '../components/Curadoria.astro';
+import ComoFunciona from '../components/ComoFunciona.astro';
 import Club from '../components/Club.astro';
 import Manifesto from '../components/Manifesto.astro';
 import PrimeirosDaVila from '../components/PrimeirosDaVila.astro';
@@ -17,6 +18,7 @@ import LeadDialog from '../components/LeadDialog.astro';
     <Hero />
     <Rotina />
     <Curadoria />
+    <ComoFunciona />
     <Club />
     <Manifesto />
     <PrimeirosDaVila />
@@ -25,7 +27,7 @@ import LeadDialog from '../components/LeadDialog.astro';
   <LeadDialog />
   <script>
     import { initReveal, initPointerParallax, initScrollParallax, initMagnetic, initCursor, initHeader } from '../scripts/motion';
-    import { initRotina, initCuradoria, initClub, initManifesto } from '../scripts/sections';
+    import { initRotina, initCuradoria, initComoFunciona, initClub, initManifesto } from '../scripts/sections';
     import { initLeadForm } from '../scripts/lead-form';
     import { captureAttribution, track } from '../lib/tracking';
 
@@ -35,6 +37,7 @@ import LeadDialog from '../components/LeadDialog.astro';
     initReveal();
     initRotina();
     initCuradoria();
+    initComoFunciona();
     initClub();
     initManifesto();
     initPointerParallax();

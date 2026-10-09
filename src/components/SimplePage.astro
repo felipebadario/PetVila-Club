@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Logo from './Logo.astro';
+import Footer from './Footer.astro';
 interface Props { title: string; description?: string; noindex?: boolean }
 const { title, description, noindex } = Astro.props;
 ---
@@ -8,6 +9,7 @@ const { title, description, noindex } = Astro.props;
 <BaseLayout title={title} description={description} noindex={noindex}>
   <header class="sp-h wrap"><a href="/" aria-label="PetVila Club, página inicial"><Logo /></a></header>
   <main id="conteudo" class="sp wrap"><slot /></main>
+  <Footer />
 </BaseLayout>
 
 <style>
@@ -17,5 +19,8 @@ const { title, description, noindex } = Astro.props;
   .sp :global(h1) { font-size: var(--step-4); margin-bottom: 1.5rem; }
   .sp :global(h2) { font-size: var(--step-2); margin: 2.5rem 0 0.75rem; }
   .sp :global(p), .sp :global(li) { margin-bottom: 0.75rem; }
+  .sp :global(ul) { padding-left: 1.25rem; margin-bottom: 0.75rem; }
+  .sp :global(a) { overflow-wrap: anywhere; }
+  .sp :global(.sp-meta) { font-size: var(--step--1); color: var(--ink-soft); margin-top: -0.75rem; }
   .sp :global(.pending) { padding: 1rem 1.25rem; border: 1.5px dashed var(--terra); border-radius: 1rem; }
 </style>

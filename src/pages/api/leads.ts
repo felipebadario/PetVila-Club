@@ -1,7 +1,10 @@
 import type { APIRoute } from 'astro';
-import { validateLead, type StoredLead } from '../../lib/leads/schema';
+import { waitUntil } from '@vercel/functions';
+import { LEAD_SOURCE, validateLead, type StoredLead } from '../../lib/leads/schema';
 import { getLeadStore } from '../../lib/leads/store';
 import { clientIp, hit } from '../../lib/security/rate-limit';
+import { toWhatsAppNumber } from '../../lib/whatsapp/phone';
+import { sendWelcome } from '../../lib/whatsapp/welcome';
 
 export const prerender = false;
 
@@ -60,12 +63,29 @@ export const POST: APIRoute = async ({ request }) => {
     return send(503, { message: 'Cadastro indisponível no momento. Tenta de novo em instantes?' });
   }
 
-  const lead: StoredLead = { id: crypto.randomUUID(), criado_em: new Date().toISOString(), ...data };
+  const criado_em = new Date().toISOString();
+  const lead: StoredLead = {
+    id: crypto.randomUUID(),
+    criado_em,
+    ...data,
+    source: LEAD_SOURCE,
+    whatsapp_e164: toWhatsAppNumber(data.whatsapp),
+    whatsapp_opt_in_at: data.whatsapp_opt_in ? criado_em : '',
+  };
   try {
     await store.save(lead);
   } catch (err) {
     console.error('[leads] falha ao salvar', lead.id, err instanceof Error ? err.message : err);
     return send(502, { message: 'Não conseguimos registrar agora. Tenta de novo?' });
+  }
+
+  // Boas-vindas pelo WhatsApp depois da resposta: o cadastro não espera pela Meta
+  // e nunca falha por causa dela. sendWelcome não lança e respeita WHATSAPP_ENABLED.
+  const welcome = sendWelcome(lead, { store });
+  try {
+    waitUntil(welcome);
+  } catch {
+    // Fora da Vercel (dev) não há contexto de waitUntil; a promessa segue sozinha.
   }
   return send(201, { ok: true });
 };

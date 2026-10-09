@@ -1,4 +1,4 @@
-/** Interações do CRM: filtros, indicadores, edição de status/nota e exportação CSV. */
+/** Interações do CRM: filtros, indicadores, edição de status/nota, exclusão e exportação CSV. */
 import type { CrmLead } from '../lib/leads/store';
 
 interface Data {
@@ -15,8 +15,16 @@ const fmtDate = (iso: string) => {
   return isNaN(+d) ? iso : d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
 };
 
+// Plano de interesse. Leads anteriores ao campo (vazio, null, undefined) = "Não informado".
+const PLAN_LABELS: Record<string, string> = { essential: 'Vila Essential', care: 'Vila Care', undecided: 'Indeciso' };
+const planOf = (l: { preferredPlan?: unknown }) => (typeof l.preferredPlan === 'string' && PLAN_LABELS[l.preferredPlan] ? l.preferredPlan : '');
+const planLabel = (code: string) => PLAN_LABELS[code] || 'Não informado';
+
 const fmtPhone = (d: string) =>
   d.length === 11 ? `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}` : d.length === 10 ? `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}` : d;
+
+const TRASH =
+  '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></svg>';
 
 export function initCrm() {
   const el = document.getElementById('crm-data');
@@ -37,14 +45,7 @@ export function initCrm() {
   };
 
   /* ---------- Indicadores ---------- */
-  const now = Date.now();
-  const startOfDay = new Date().setHours(0, 0, 0, 0);
   const set = (k: string, v: number) => (document.querySelector(`[data-kpi="${k}"]`)!.textContent = v.toLocaleString('pt-BR'));
-  set('total', leads.length);
-  set('hoje', leads.filter((l) => +new Date(l.criado_em) >= startOfDay).length);
-  set('semana', leads.filter((l) => now - +new Date(l.criado_em) < 7 * 864e5).length);
-  set('novos', leads.filter((l) => (l.status || 'novo') === 'novo').length);
-
   const tally = (values: string[]) => {
     const m = new Map<string, number>();
     values.forEach((v) => m.set(v, (m.get(v) || 0) + 1));
@@ -60,10 +61,19 @@ export function initCrm() {
           .join('')
       : '<li><span>Sem dados ainda</span></li>';
   };
-  breakdown('porte', tally(leads.map((l) => l.porte)), (k) => labels.porte[k] || k);
-  breakdown('interesses', tally(leads.flatMap((l) => l.interesses)), (k) => labels.interesse[k] || k);
-  breakdown('origem', tally(leads.map((l) => l.utm_source || l.referrer || 'direto')));
-  breakdown('uf', tally(leads.map((l) => l.uf)));
+  const stats = () => {
+    const now = Date.now();
+    const startOfDay = new Date().setHours(0, 0, 0, 0);
+    set('total', leads.length);
+    set('hoje', leads.filter((l) => +new Date(l.criado_em) >= startOfDay).length);
+    set('semana', leads.filter((l) => now - +new Date(l.criado_em) < 7 * 864e5).length);
+    set('novos', leads.filter((l) => (l.status || 'novo') === 'novo').length);
+    breakdown('porte', tally(leads.map((l) => l.porte)), (k) => labels.porte[k] || k);
+    breakdown('interesses', tally(leads.flatMap((l) => l.interesses)), (k) => labels.interesse[k] || k);
+    breakdown('origem', tally(leads.map((l) => l.utm_source || l.referrer || 'direto')));
+    breakdown('uf', tally(leads.map((l) => l.uf)));
+  };
+  stats();
 
   /* ---------- Tabela ---------- */
   const filtered = () => {
@@ -94,11 +104,13 @@ export function initCrm() {
           <td><a href="mailto:${esc(l.email)}">${esc(l.email)}</a>${wa ? `<small><a href="${wa}" target="_blank" rel="noopener noreferrer">${esc(fmtPhone(l.whatsapp))}</a></small>` : ''}</td>
           <td>${esc(l.cidade)}<small>${esc(l.uf)}</small></td>
           <td><div class="chips">${l.interesses.map((i) => `<span>${esc(labels.interesse[i] || i)}</span>`).join('')}</div></td>
+          <td><span class="plan-tag" data-plan="${planOf(l)}">${esc(planLabel(planOf(l)))}</span></td>
           <td>${esc(l.utm_source || 'direto')}<small>${esc([l.utm_campaign, l.cta_origem].filter(Boolean).join(' · '))}</small></td>
           <td><select data-status="${esc(status)}" aria-label="Status de ${esc(l.nome)}">${statuses
             .map((s) => `<option value="${esc(s)}"${s === status ? ' selected' : ''}>${esc(s)}</option>`)
             .join('')}</select></td>
           <td><textarea rows="1" aria-label="Nota sobre ${esc(l.nome)}" placeholder="Anotar…">${esc(l.nota)}</textarea></td>
+          <td><button type="button" class="del" data-del aria-label="Excluir cadastro de ${esc(l.nome)}" title="Excluir cadastro">${TRASH}</button></td>
         </tr>`;
       })
       .join('');
@@ -140,11 +152,54 @@ export function initCrm() {
     }
   });
 
+  /* ---------- Exclusão (com confirmação) ---------- */
+  const dialog = document.querySelector<HTMLDialogElement>('[data-del-dialog]')!;
+  const who = dialog.querySelector<HTMLElement>('[data-del-who]')!;
+  const confirmBtn = dialog.querySelector<HTMLButtonElement>('[data-del-confirm]')!;
+  let pendingId = '';
+
+  rows.addEventListener('click', (e) => {
+    const id = (e.target as HTMLElement).closest('[data-del]')?.closest('tr')?.dataset.id;
+    const lead = id && leads.find((l) => l.id === id);
+    if (!lead) return;
+    pendingId = lead.id;
+    who.textContent = [lead.nome, lead.nome_cao && `tutor de ${lead.nome_cao}`, lead.email].filter(Boolean).join(' · ');
+    confirmBtn.disabled = false;
+    dialog.showModal();
+  });
+
+  confirmBtn.addEventListener('click', async () => {
+    const id = pendingId;
+    if (!id) return;
+    confirmBtn.disabled = true;
+    try {
+      const res = await fetch('/api/crm/lead', {
+        method: 'DELETE',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ id }),
+      });
+      const out = await res.json().catch(() => ({}));
+      if (res.status === 401) location.reload();
+      if (!res.ok) throw new Error(out.message || 'Não consegui excluir.');
+      const i = leads.findIndex((l) => l.id === id);
+      if (i >= 0) leads.splice(i, 1);
+      dialog.close();
+      stats();
+      render();
+      say('Cadastro excluído');
+    } catch (err) {
+      dialog.close();
+      say(err instanceof Error ? err.message : 'Não consegui excluir.');
+    } finally {
+      pendingId = '';
+    }
+  });
+
   /* ---------- Exportação (respeita os filtros) ---------- */
   document.querySelector('[data-export]')?.addEventListener('click', () => {
     const cols: (keyof CrmLead)[] = [
       'criado_em', 'status', 'nome', 'email', 'whatsapp', 'nome_cao', 'porte', 'idade_faixa', 'nascimento',
-      'cidade', 'uf', 'interesses', 'cta_origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
+      'cidade', 'uf', 'interesses', 'preferredPlan', 'cta_origem', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
       'utm_term', 'referrer', 'nota', 'id',
     ];
     const cell = (v: unknown) => {

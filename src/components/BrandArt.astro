@@ -1,0 +1,32 @@
+---
+/**
+ * Artes da embalagem PetVila, vetorizadas do print das caixas (src/assets/brand).
+ * Decorativas: entram inline e escondidas do leitor de tela. O cão herda a cor do `color`.
+ */
+import caixas from '../assets/brand/caixas-petvila.svg?raw';
+import caixa from '../assets/brand/caixa-petvila.svg?raw';
+import cao from '../assets/brand/cao-petvila.svg?raw';
+import vila from '../assets/brand/vila-panorama.svg?raw';
+
+interface Props {
+  art: 'caixas' | 'caixa' | 'cao' | 'vila';
+  class?: string;
+  [key: `data-${string}`]: string | number | undefined;
+}
+const { art, class: cls = '', ...attrs } = Astro.props;
+const raw = { caixas, caixa, cao, vila }[art];
+const svg = raw.replace(/\s(role|aria-label)="[^"]*"/g, '').replace('<svg ', '<svg aria-hidden="true" focusable="false" ');
+---
+
+<span class={`brand-art ${cls}`} aria-hidden="true" {...attrs} set:html={svg} />
+
+<style>
+  .brand-art {
+    display: block;
+    line-height: 0;
+  }
+  .brand-art :global(svg) {
+    width: 100%;
+    height: auto;
+  }
+</style>
