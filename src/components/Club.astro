@@ -332,12 +332,29 @@ import { club, cta, store } from '../content/copy';
     }
   }
   @media (min-width: 960px) {
+    /* Os dois cards dividem as mesmas linhas (subgrid): título, frase, texto,
+       quantidade, ciclo, lista, Originals e botão ficam na mesma altura nos dois. */
     .club__plans {
-      grid-template-columns: 1fr 1.3fr;
-      align-items: stretch;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(8, auto);
     }
-    .plan--core {
-      min-height: 40rem;
+    .plan {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: subgrid;
+      grid-row: span 8;
+      row-gap: 1rem;
+      justify-content: stretch;
+      min-height: 0;
+    }
+    .plan > * {
+      justify-self: start;
+      align-self: start;
+    }
+    .plan :global(.plan__cta) {
+      grid-row: 8;
+      align-self: end;
+      justify-self: stretch;
     }
   }
   @media (hover: hover) and (pointer: fine) {
