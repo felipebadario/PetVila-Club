@@ -75,7 +75,6 @@ export const comoFunciona = {
 
 export const club = {
   headline: 'Existe um jeito PetVila de cuidar.',
-  soon: 'Em breve',
   perMonth: 'produtos selecionados todos os meses',
   cycle: 'Assinatura mensal em ciclos de 3, 6 ou 12 meses',
   plans: [
