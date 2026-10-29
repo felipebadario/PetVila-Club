@@ -75,7 +75,6 @@ export const comoFunciona = {
 
 export const club = {
   headline: 'Existe um jeito PetVila de cuidar.',
-  soon: 'Em breve',
   perMonth: 'produtos selecionados todos os meses',
   cycle: 'Assinatura mensal em ciclos de 3, 6 ou 12 meses',
   plans: [
@@ -84,8 +83,8 @@ export const club = {
       name: 'Vila Essential',
       tagline: 'O essencial, bem escolhido.',
       copy: 'O essencial para fazer o mês do seu cão ainda melhor.',
-      count: 3,
-      items: ['1 brinquedo selecionado', '1 snack', '1 produto de cuidado ou higiene'],
+      count: 4,
+      items: ['1 brinquedo selecionado', '2 snacks', '1 produto de cuidado ou higiene'],
       core: false,
     },
     {
@@ -93,13 +92,13 @@ export const club = {
       name: 'Vila Care',
       tagline: 'A experiência completa PetVila.',
       copy: 'Mais cuidado. Mais descobertas. Mais PetVila.',
-      count: 5,
+      count: 7,
       items: [
-        '1 brinquedo premium em destaque',
-        '1 brinquedo complementar',
-        '1 snack premium',
-        '1 snack de descoberta ou funcional',
-        '1 produto de cuidado ou higiene',
+        '1 brinquedo premium',
+        '1 brinquedo funcional',
+        '2 snacks premium',
+        '1 produto de higiene',
+        '2 itens surpresa PetVila Originals',
       ],
       core: true,
       originals: {
